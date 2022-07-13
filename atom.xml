@@ -2,12 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://example.com</id>
     <title>My Violet Eva Garden</title>
-    <subtitle>Android Reverse</subtitle>
-    <icon>http://example.com/images/favicon.ico</icon>
     <link href="http://example.com" />
-    <author>
-      <name>kiyomi</name>
-    </author>
     <updated>2022-07-13T15:20:21.111Z</updated>
     <entry>
         <id>http://example.com/2022/07/13/hello-world/</id>
