@@ -22,7 +22,6 @@
             <description><![CDATA[ &lt;p&gt;这是一篇测试文章&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/test.png&#34; class=&#34;&#34; title=&#34;图片引用方法一&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;test.png&#34; alt=&#34;图片引用方法二&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img data-src=&#34;/images/test.png&#34; alt=&#34;图片引用方法三&#34; /&gt;&lt;/p&gt;
  ]]></description>
         </item>
         <item>
