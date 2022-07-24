@@ -16,8 +16,7 @@
         <content type="html">&lt;h1 id=&#34;博客发布步骤&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#博客发布步骤&#34;&gt;#&lt;/a&gt; 博客发布步骤&lt;/h1&gt;
 &lt;p&gt;首先，我们发布博客需要 &lt;code&gt;想一想是否得在某个大分类-小分类下&lt;/code&gt; ，我这里由于提前想好以后：&lt;/p&gt;
 &lt;p&gt;大分类是 —— 计算机科学&lt;/p&gt;
-&lt;p&gt;中分类是 —— 博客&lt;/p&gt;
-&lt;p&gt;小分类是 —— 博客的食用方法&lt;/p&gt;
+&lt;p&gt;小分类是 —— 博客&lt;/p&gt;
 &lt;p&gt;在这下面才有我的这篇 &lt;code&gt;如何在shoka博客中写作、发布&lt;/code&gt; 文章&lt;/p&gt;
 &lt;h2 id=&#34;在指定路径下创建文章&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#在指定路径下创建文章&#34;&gt;#&lt;/a&gt; 在指定路径下创建文章&lt;/h2&gt;
 &lt;pre&gt;&lt;code&gt;hexo new 文章名 -p 路径/文件名.md
