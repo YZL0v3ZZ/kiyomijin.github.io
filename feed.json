@@ -7,6 +7,28 @@
     "home_page_url": "http://example.com",
     "items": [
         {
+            "id": "http://example.com/2022/07/24/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/%E5%8D%9A%E5%AE%A2/%E5%A6%82%E4%BD%95%E5%9C%A8shoka%E5%8D%9A%E5%AE%A2%E4%B8%AD%E5%86%99%E4%BD%9C%E3%80%81%E5%8F%91%E5%B8%83/",
+            "url": "http://example.com/2022/07/24/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/%E5%8D%9A%E5%AE%A2/%E5%A6%82%E4%BD%95%E5%9C%A8shoka%E5%8D%9A%E5%AE%A2%E4%B8%AD%E5%86%99%E4%BD%9C%E3%80%81%E5%8F%91%E5%B8%83/",
+            "title": "如何在shoka博客中写作、发布",
+            "date_published": "2022-07-24T10:50:43.000Z",
+            "content_html": "",
+            "tags": []
+        },
+        {
+            "id": "http://example.com/2022/07/24/%E5%A6%82%E4%BD%95%E5%9C%A8shoka%E5%8D%9A%E5%AE%A2%E4%B8%AD%E5%86%99%E4%BD%9C%E3%80%81%E5%8F%91%E5%B8%83/",
+            "url": "http://example.com/2022/07/24/%E5%A6%82%E4%BD%95%E5%9C%A8shoka%E5%8D%9A%E5%AE%A2%E4%B8%AD%E5%86%99%E4%BD%9C%E3%80%81%E5%8F%91%E5%B8%83/",
+            "title": "如何在shoka博客中写作、发布",
+            "date_published": "2022-07-24T10:27:46.000Z",
+            "content_html": "<h1 id=\"博客发布步骤\"><a class=\"anchor\" href=\"#博客发布步骤\">#</a> 博客发布步骤</h1>\n<h2 id=\"使用hexo-new命令\"><a class=\"anchor\" href=\"#使用hexo-new命令\">#</a> 使用 hexo new 命令</h2>\n<pre><code>hexo new 文章名 -p 路径/文件名.md\n</code></pre>\n<p><img data-src=\"F:%5Chexo-blog%5Csource_posts%5C%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%5C%E5%8D%9A%E5%AE%A2%5C%E5%A6%82%E4%BD%95%E5%9C%A8shoka%E5%8D%9A%E5%AE%A2%E4%B8%AD%E5%86%99%E4%BD%9C%E3%80%81%E5%8F%91%E5%B8%83%5Cpic-1.png\" alt=\"image-20220724185106639\" /></p>\n<p>就会在 &lt;root-dir-of-blog&gt;/source/_posts/ 路径 / 下创建你的文件名同名目录和同名 md 文件</p>\n<p><img data-src=\"F:%5Chexo-blog%5Csource_posts%5C%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%5C%E5%8D%9A%E5%AE%A2%5C%E5%A6%82%E4%BD%95%E5%9C%A8shoka%E5%8D%9A%E5%AE%A2%E4%B8%AD%E5%86%99%E4%BD%9C%E3%80%81%E5%8F%91%E5%B8%83%5Cpic-2.png\" alt=\"image-20220724185321747\" /></p>\n<p><code>特别注意</code> ：</p>\n<ul>\n<li>在同名文件夹下放置图片等资源，文章内容则要写在 md 文件中。</li>\n</ul>\n<h2 id=\"书写博客内容\"><a class=\"anchor\" href=\"#书写博客内容\">#</a> 书写博客内容</h2>\n<p><img data-src=\"F:%5Chexo-blog%5Csource_posts%5C%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%5C%E5%8D%9A%E5%AE%A2%5C%E5%A6%82%E4%BD%95%E5%9C%A8shoka%E5%8D%9A%E5%AE%A2%E4%B8%AD%E5%86%99%E4%BD%9C%E3%80%81%E5%8F%91%E5%B8%83%5Cpic-3.png\" alt=\"image-20220724190021732\" /></p>\n<h2 id=\"发布博客\"><a class=\"anchor\" href=\"#发布博客\">#</a> 发布博客</h2>\n<p>当你文章写完了，想发布到博客上面，先要把文章部署到 <code>github</code>  上面，然后打开你的博客，博客就会读取 <code>github</code>  仓库的内容了。</p>\n<pre><code> hexo clean\n hexo g -d\n # 逐步输入以上两条指令，执行完再输入下一条\n # 或者一次性输入两条也是可以的，但新手还不建议一次性输入，前期部署可能有时候容易出错\n hexo clean &amp;&amp; hexo g &amp;&amp; hexo d\n # 部署完了看一下窗口没有出现报错就可以去博客刷新一下内容了，一般需要几分钟才更新内容\n</code></pre>\n",
+            "tags": [
+                "计算机科学",
+                "博客",
+                "博客的食用方法",
+                "博客相关",
+                "shoka"
+            ]
+        },
+        {
             "id": "http://example.com/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/",
             "url": "http://example.com/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/",
             "title": "测试文章",
