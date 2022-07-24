@@ -26,6 +26,16 @@
 &lt;/ul&gt;
 &lt;h2 id=&#34;书写博客内容&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#书写博客内容&#34;&gt;#&lt;/a&gt; 书写博客内容&lt;/h2&gt;
 &lt;p&gt;&lt;img data-src=&#34;pic-3.png&#34; alt=&#34;image-20220724190021732&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;其中，讲讲 shoka 中程序代码块的书写，以下内容为 md 文件中格式：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[language] [title] [url] [link text] [mark] [command]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;```yaml 博客代码块 https://kiyomijin.github.io 参考链接
+import java.util.Scanner;
+...
+Scanner in = new Scanner (System.in);
+// 输入 Scan 之后，按下键盘 Alt + “/” 键，Eclipse 下自动补全。
+System.out.println (in.nextLine ());
+System.out.println (&amp;quot;Hello&amp;quot; + &amp;quot;world.&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
 &lt;h2 id=&#34;发布博客&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#发布博客&#34;&gt;#&lt;/a&gt; 发布博客&lt;/h2&gt;
 &lt;p&gt;当你文章写完了，想发布到博客上面，先要把文章部署到 &lt;code&gt;github&lt;/code&gt;  上面，然后打开你的博客，博客就会读取 &lt;code&gt;github&lt;/code&gt;  仓库的内容了。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt; hexo clean
