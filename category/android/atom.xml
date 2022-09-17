@@ -4,14 +4,14 @@
     <title>My Violet Eva Garden • Posts by &#34;android&#34; category</title>
     <link href="http://example.com" />
     <updated>2022-07-13T19:13:28.000Z</updated>
+    <category term="原创" />
     <category term="CTF小训" />
     <category term="Misc" />
-    <category term="原创" />
     <entry>
         <id>http://example.com/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</id>
         <title>测试文章</title>
         <link rel="alternate" href="http://example.com/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/"/>
-        <content type="html">&lt;link rel=&#34;stylesheet&#34; class=&#34;aplayer-secondary-style-marker&#34; href=&#34;\assets\css\APlayer.min.css&#34;&gt;&lt;script src=&#34;\assets\js\APlayer.min.js&#34; class=&#34;aplayer-secondary-script-marker&#34;&gt;&lt;/script&gt;&lt;p&gt;这是一篇测试文章&lt;/p&gt;
+        <content type="html">&lt;p&gt;这是一篇测试文章&lt;/p&gt;
 &lt;img src=&#34;/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/test.png&#34; class=&#34;&#34; title=&#34;图片引用方法一&#34;&gt;
 &lt;p&gt;&lt;img src=&#34;test.png&#34; alt=&#34;图片引用方法二&#34;&gt;&lt;/p&gt;
 </content>
