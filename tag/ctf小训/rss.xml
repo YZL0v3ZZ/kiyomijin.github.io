@@ -2,18 +2,18 @@
 <rss version="2.0">
     <channel>
         <title>My Violet Eva Garden • Posts by &#34;ctf小训&#34; tag</title>
-        <link>http://example.com</link>
+        <link>https://kiyomijin.github.io</link>
         <description></description>
         <language>zh-CN</language>
         <pubDate>Sat, 17 Sep 2022 14:02:32 +0800</pubDate>
         <lastBuildDate>Sat, 17 Sep 2022 14:02:32 +0800</lastBuildDate>
+        <category>原创</category>
         <category>CTF小训</category>
         <category>Misc</category>
-        <category>原创</category>
         <item>
-            <guid isPermalink="true">http://example.com/2022/09/17/CTF%E5%B0%8F%E8%AE%AD/Misc/Misc%E2%80%94%E2%80%94%E7%A7%81%E6%9C%89bit%E9%9A%90%E5%86%99/</guid>
+            <guid isPermalink="true">https://kiyomijin.github.io/2022/09/17/CTF%E5%B0%8F%E8%AE%AD/Misc/Misc%E2%80%94%E2%80%94%E7%A7%81%E6%9C%89bit%E9%9A%90%E5%86%99/</guid>
             <title>Misc——私有bit隐写</title>
-            <link>http://example.com/2022/09/17/CTF%E5%B0%8F%E8%AE%AD/Misc/Misc%E2%80%94%E2%80%94%E7%A7%81%E6%9C%89bit%E9%9A%90%E5%86%99/</link>
+            <link>https://kiyomijin.github.io/2022/09/17/CTF%E5%B0%8F%E8%AE%AD/Misc/Misc%E2%80%94%E2%80%94%E7%A7%81%E6%9C%89bit%E9%9A%90%E5%86%99/</link>
             <category>CTF小训</category>
             <category>Misc</category>
             <pubDate>Sat, 17 Sep 2022 14:02:32 +0800</pubDate>

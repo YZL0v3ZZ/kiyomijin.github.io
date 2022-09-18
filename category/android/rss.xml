@@ -2,18 +2,18 @@
 <rss version="2.0">
     <channel>
         <title>My Violet Eva Garden • Posts by &#34;android&#34; category</title>
-        <link>http://example.com</link>
+        <link>https://kiyomijin.github.io</link>
         <description></description>
         <language>zh-CN</language>
         <pubDate>Thu, 14 Jul 2022 03:13:28 +0800</pubDate>
         <lastBuildDate>Thu, 14 Jul 2022 03:13:28 +0800</lastBuildDate>
+        <category>原创</category>
         <category>CTF小训</category>
         <category>Misc</category>
-        <category>原创</category>
         <item>
-            <guid isPermalink="true">http://example.com/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</guid>
+            <guid isPermalink="true">https://kiyomijin.github.io/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</guid>
             <title>测试文章</title>
-            <link>http://example.com/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</link>
+            <link>https://kiyomijin.github.io/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</link>
             <category>原创</category>
             <pubDate>Thu, 14 Jul 2022 03:13:28 +0800</pubDate>
             <description><![CDATA[ &lt;p&gt;这是一篇测试文章&lt;/p&gt;
