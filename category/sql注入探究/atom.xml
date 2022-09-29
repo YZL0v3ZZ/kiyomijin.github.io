@@ -3,12 +3,74 @@
     <id>https://kiyomijin.github.io</id>
     <title>My Violet Eva Garden • Posts by &#34;sql注入探究&#34; category</title>
     <link href="https://kiyomijin.github.io" />
-    <updated>2022-09-29T13:49:22.000Z</updated>
+    <updated>2022-09-29T13:54:18.000Z</updated>
     <category term="原创" />
-    <category term="数据库安全" />
     <category term="SQL注入探究" />
+    <category term="数据库安全" />
     <category term="CTF小训" />
     <category term="Misc" />
+    <entry>
+        <id>https://kiyomijin.github.io/2022/09/29/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E5%AD%97%E7%AC%A6%E5%9E%8B%E6%B3%A8%E5%85%A5/</id>
+        <title>字符型注入</title>
+        <link rel="alternate" href="https://kiyomijin.github.io/2022/09/29/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E5%AD%97%E7%AC%A6%E5%9E%8B%E6%B3%A8%E5%85%A5/"/>
+        <content type="html">&lt;h1 id=&#34;sql-注入之字符型注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql-注入之字符型注入&#34;&gt;#&lt;/a&gt; SQL 注入之字符型注入&lt;/h1&gt;
+&lt;p&gt;本篇使用字符型注入。&lt;/p&gt;
+&lt;h2 id=&#34;注入步骤单引号注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#注入步骤单引号注入&#34;&gt;#&lt;/a&gt; 注入步骤 (单引号注入)&lt;/h2&gt;
+&lt;p&gt;由于 Less-1 从请求上看到是 GET 型，所以礼节性地输入个 id=1&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929215708949.png&#34; alt=&#34;image-20220929215708949&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;尝试注入类型&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试注入类型&#34;&gt;#&lt;/a&gt; 尝试注入类型&lt;/h3&gt;
+&lt;p&gt;输入 1’  来看看是否报错&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929215814839.png&#34; alt=&#34;image-20220929215814839&#34;&gt;&lt;/p&gt;
+&lt;p&gt;输入 22’  来看看是否报错&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929215843779.png&#34; alt=&#34;image-20220929215843779&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么， &lt;code&gt;&#39;22&#39;&#39; LIMIT 0,1&lt;/code&gt;  中，‘22’’  外面包裹的两个单引号是查询时带上的，需要我们去闭合。&lt;/p&gt;
+&lt;h3 id=&#34;确定注入类型&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#确定注入类型&#34;&gt;#&lt;/a&gt; 确定注入类型&lt;/h3&gt;
+&lt;p&gt;闭合单引号，需要在输入中添加一个单引号之后，使用行注释符注释后面的代码，常用的有: #、%23、–+&lt;/p&gt;
+&lt;p&gt;那么，我们尝试一下 #号&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;sqli&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;Less&lt;span class=&#34;number&#34;&gt;-1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;string&#34;&gt;&amp;#x27; #&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;不行，会报错，可能后台过滤了 #号。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929220358319.png&#34; alt=&#34;image-20220929220358319&#34;&gt;&lt;/p&gt;
+&lt;p&gt;尝试 %23 也一样，就不再贴图了。&lt;/p&gt;
+&lt;p&gt;我们最后尝试–+，成功。&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;sqli&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;Less&lt;span class=&#34;number&#34;&gt;-1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;string&#34;&gt;&amp;#x27; --+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929220326957.png&#34; alt=&#34;image-20220929220326957&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由此，可以确定此题注入类型为字符型注入的&lt;strong&gt;单引号注入&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;确定列数&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#确定列数&#34;&gt;#&lt;/a&gt; 确定列数&lt;/h3&gt;
+&lt;p&gt;使用 order by n 来确定有多少列。&lt;strong&gt;order by n&lt;/strong&gt; 会以当前表中的 “&lt;strong&gt;第 n 列&lt;/strong&gt;” 进行排序，如果&lt;strong&gt;第 n 列不存在&lt;/strong&gt;，则会抛出 &lt;code&gt;Unknown column &#39;n&#39; &lt;/code&gt; 的异常。&lt;/p&gt;
+&lt;p&gt;4 列？&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;sqli&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;Less&lt;span class=&#34;number&#34;&gt;-1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;string&#34;&gt;&amp;#x27; order by 4--+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929220842238.png&#34; alt=&#34;image-20220929220842238&#34;&gt;&lt;/p&gt;
+&lt;p&gt;3 列？&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;sqli&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;Less&lt;span class=&#34;number&#34;&gt;-1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;string&#34;&gt;&amp;#x27; order by 3--+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929220533059.png&#34; alt=&#34;image-20220929220533059&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;不报错，则说明有 3 列&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;构造联合查询泄露数据库信息&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#构造联合查询泄露数据库信息&#34;&gt;#&lt;/a&gt; 构造联合查询泄露数据库信息&lt;/h3&gt;
+&lt;p&gt;这回我们使用 &lt;code&gt;and 0&lt;/code&gt;  来构造对于 id 的查询为假的条件&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;sqli&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;Less&lt;span class=&#34;number&#34;&gt;-1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;string&#34;&gt;&amp;#x27; and 0 union select 1, group_concat(table_name), database() from information_schema.tables where table_schema = database() --+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929221156300.png&#34; alt=&#34;image-20220929221156300&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;注入步骤双引号注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#注入步骤双引号注入&#34;&gt;#&lt;/a&gt; 注入步骤 (双引号注入)&lt;/h2&gt;
+&lt;p&gt;Less-4 是一道双引号注入的题目。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929221450837.png&#34; alt=&#34;image-20220929221450837&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由于查看发现是 GET 请求，因此理解性地输入 id=1&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929221657747.png&#34; alt=&#34;image-20220929221657747&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;尝试注入类型-2&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试注入类型-2&#34;&gt;#&lt;/a&gt; 尝试注入类型&lt;/h3&gt;
+&lt;p&gt;输入 1’  来看看是否报错&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929221831821.png&#34; alt=&#34;image-20220929221831821&#34;&gt;&lt;/p&gt;
+&lt;p&gt;不报错，怀疑存在双引号注入。&lt;/p&gt;
+&lt;p&gt;输入 1“  来看看是否报错&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929221918225.png&#34; alt=&#34;image-20220929221918225&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么， &lt;code&gt;&amp;quot;1&amp;quot;&amp;quot;) LIMIT 0,1&lt;/code&gt;  中，“1&amp;quot;”)  外面包裹的【两个双引号 + 一个小括号】是查询时带上的，需要我们去闭合。&lt;/p&gt;
+&lt;h3 id=&#34;确定注入类型-2&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#确定注入类型-2&#34;&gt;#&lt;/a&gt; 确定注入类型&lt;/h3&gt;
+&lt;p&gt;我们尝试：&lt;/p&gt;
+&lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;sqli&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;Less&lt;span class=&#34;number&#34;&gt;-4&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;&amp;quot;) --+&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;成功不报错。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220929222215596.png&#34; alt=&#34;image-20220929222215596&#34;&gt;&lt;/p&gt;
+&lt;p&gt;之后就可以愉快地&lt;strong&gt;确定列数&lt;/strong&gt; + 使用&lt;strong&gt;联合查询泄露数据库信息&lt;/strong&gt;了。&lt;/p&gt;
+&lt;p&gt;至此，字符型注入演示完毕。&lt;/p&gt;
+</content>
+        <category term="SQL注入探究" />
+        <updated>2022-09-29T13:54:18.000Z</updated>
+    </entry>
     <entry>
         <id>https://kiyomijin.github.io/2022/09/29/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/POST%E6%B3%A8%E5%85%A5/</id>
         <title>POST注入</title>
@@ -66,6 +128,7 @@
 &lt;p&gt;第二次注入尝试&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929210956005.png&#34; alt=&#34;image-20220929210956005&#34;&gt;&lt;/p&gt;
 </content>
+        <category term="SQL注入探究" />
         <updated>2022-09-29T13:49:22.000Z</updated>
     </entry>
     <entry>
