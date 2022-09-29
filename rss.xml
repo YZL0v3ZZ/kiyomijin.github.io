@@ -8,8 +8,8 @@
         <pubDate>Thu, 29 Sep 2022 23:57:38 +0800</pubDate>
         <lastBuildDate>Thu, 29 Sep 2022 23:57:38 +0800</lastBuildDate>
         <category>原创</category>
-        <category>SQL注入探究</category>
         <category>数据库安全</category>
+        <category>SQL注入探究</category>
         <category>CTF小训</category>
         <category>Misc</category>
         <item>
@@ -27,15 +27,16 @@
 &lt;p&gt;还是 Less-11，我们挂上&lt;strong&gt; BurpSuit&lt;/strong&gt; 代理，然后&lt;strong&gt; Send To Reapeater&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929231322659.png&#34; alt=&#34;image-20220929231322659&#34;&gt;&lt;/p&gt;
 &lt;p&gt;报错注入常使用的函数如下：&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;extractvalue&lt;/strong&gt; (): 从目标 XML 中返回包含所查询值的字符串。&lt;/p&gt;
+&lt;p&gt;①&lt;strong&gt;extractvalue&lt;/strong&gt; (): 从目标 XML 中返回包含所查询值的字符串。&lt;/p&gt;
 &lt;p&gt;例子：extractvalue (XML_document, XPath_string);&lt;/p&gt;
-&lt;p&gt;** 第一个参数：**XML_documentshi String 格式，为 XML 文档对象的名称。&lt;strong&gt;在报错注入中可以随意指定，比如 1 即可。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;** 第二个参数：**XPath_string (Xpath 格式的字符串)。&lt;strong&gt;在报错注入中由于就是利用这个点来泄露信息，所以重点构造语句放在这个第二个参数里。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;第一个参数&lt;/code&gt; ：XML_documentshi String 格式，为 XML 文档对象的名称。&lt;strong&gt;在报错注入中可以随意指定，比如 1 即可。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;第二个参数&lt;/code&gt; ：XPath_string (Xpath 格式的字符串)。&lt;strong&gt;在报错注入中由于就是利用这个点来泄露信息，所以重点构造语句放在这个第二个参数里。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;concat ()：返回结果为连接参数产生的字符串。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;updatexml&lt;/strong&gt;(XML_document, XPath_string, new_value);&lt;/p&gt;
-&lt;p&gt;** 第一个参数：**XML_document 是 String 格式，为 XML 文档对象的名称。&lt;strong&gt;在报错注入中可以随意指定，比如 1 即可。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;** 第二个参数：**XPath_string (XPATH 格式的字符串)。&lt;strong&gt;在报错注入中由于就是利用这个点来泄露信息，所以重点构造语句放在这个第二个参数里。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;** 第三个参数：**new_value, String 格式， 替换查找到的符合条件的数据。&lt;strong&gt;在报错注入中可以随意指定，比如 1 即可。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;②&lt;strong&gt;updatexml&lt;/strong&gt; (): 更新 XML 信息&lt;/p&gt;
+&lt;p&gt;例子：updatexml (XML_document, XPath_string, new_value);&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;第一个参数&lt;/code&gt; ：XML_document 是 String 格式，为 XML 文档对象的名称。&lt;strong&gt;在报错注入中可以随意指定，比如 1 即可。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;第二个参数&lt;/code&gt; ：XPath_string (XPATH 格式的字符串)。&lt;strong&gt;在报错注入中由于就是利用这个点来泄露信息，所以重点构造语句放在这个第二个参数里。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;第三个参数&lt;/code&gt; ：new_value, String 格式， 替换查找到的符合条件的数据。&lt;strong&gt;在报错注入中可以随意指定，比如 1 即可。&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id=&#34;确定注入类型和列数&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#确定注入类型和列数&#34;&gt;#&lt;/a&gt; 确定注入类型和列数&lt;/h3&gt;
 &lt;p&gt;通过单引号注入和 order by n 来&lt;strong&gt;确定注入类型&lt;/strong&gt;和&lt;strong&gt;查询列数&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929232026560.png&#34; alt=&#34;image-20220929232026560&#34;&gt;&lt;/p&gt;
@@ -54,7 +55,7 @@
 &lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=1&amp;#x27; union select 1, extractvalue(1, concat(&amp;#x27;%&amp;#x27;, (select table_name from information_schema.tables where table_schema=database()))) --+&amp;amp;passwd=123456&amp;amp;submit=Submit&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;但是报了错， &lt;code&gt;Subquery returns more than 1 row&lt;/code&gt; ，说明最后查询的 select 的列数超过了一列。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929233914430.png&#34; alt=&#34;image-20220929233914430&#34;&gt;&lt;/p&gt;
-&lt;p&gt;我们需要使用 limit 0,1 限制一列输出&lt;/p&gt;
+&lt;p&gt;我们需要&lt;strong&gt;使用 limit 0,1 限制一列输出&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929234118900.png&#34; alt=&#34;image-20220929234118900&#34;&gt;&lt;/p&gt;
 &lt;p&gt;或者&lt;strong&gt;使用 group_concat 拼接成一列&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929234238245.png&#34; alt=&#34;image-20220929234238245&#34;&gt;&lt;/p&gt;
@@ -101,7 +102,7 @@
 &lt;p&gt;3 列？&lt;/p&gt;
 &lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;sqli&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;Less&lt;span class=&#34;number&#34;&gt;-1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;string&#34;&gt;&amp;#x27; order by 3--+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929220533059.png&#34; alt=&#34;image-20220929220533059&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;不报错，则说明有 3 列&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;不报错，则说明 &lt;code&gt;有3列&lt;/code&gt; 。&lt;/p&gt;
 &lt;h3 id=&#34;构造联合查询泄露数据库信息&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#构造联合查询泄露数据库信息&#34;&gt;#&lt;/a&gt; 构造联合查询泄露数据库信息&lt;/h3&gt;
 &lt;p&gt;这回我们使用 &lt;code&gt;and 0&lt;/code&gt;  来构造对于 id 的查询为假的条件&lt;/p&gt;
 &lt;figure class=&#34;highlight sql&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;127.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.0&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;.1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;sqli&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;Less&lt;span class=&#34;number&#34;&gt;-1&lt;/span&gt;&lt;span class=&#34;operator&#34;&gt;/&lt;/span&gt;?id&lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;string&#34;&gt;&amp;#x27; and 0 union select 1, group_concat(table_name), database() from information_schema.tables where table_schema = database() --+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
@@ -109,7 +110,7 @@
 &lt;h2 id=&#34;注入步骤双引号注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#注入步骤双引号注入&#34;&gt;#&lt;/a&gt; 注入步骤 (双引号注入)&lt;/h2&gt;
 &lt;p&gt;Less-4 是一道双引号注入的题目。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929221450837.png&#34; alt=&#34;image-20220929221450837&#34;&gt;&lt;/p&gt;
-&lt;p&gt;由于查看发现是 GET 请求，因此理解性地输入 id=1&lt;/p&gt;
+&lt;p&gt;由于查看发现是 GET 请求，因此礼节性地输入 id=1&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220929221657747.png&#34; alt=&#34;image-20220929221657747&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;尝试注入类型-2&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试注入类型-2&#34;&gt;#&lt;/a&gt; 尝试注入类型&lt;/h3&gt;
 &lt;p&gt;输入 1’  来看看是否报错&lt;/p&gt;
