@@ -5,13 +5,27 @@
         <link>https://kiyomijin.github.io</link>
         <description></description>
         <language>zh-CN</language>
-        <pubDate>Sat, 01 Oct 2022 22:13:13 +0800</pubDate>
-        <lastBuildDate>Sat, 01 Oct 2022 22:13:13 +0800</lastBuildDate>
+        <pubDate>Sat, 01 Oct 2022 23:10:40 +0800</pubDate>
+        <lastBuildDate>Sat, 01 Oct 2022 23:10:40 +0800</lastBuildDate>
         <category>SQL注入探究</category>
         <category>原创</category>
         <category>数据库安全</category>
         <category>CTF小训</category>
         <category>Misc</category>
+        <item>
+            <guid isPermalink="true">https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/HTTP-Referer%E6%B3%A8%E5%85%A5/</guid>
+            <title>HTTP-Referer注入</title>
+            <link>https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/HTTP-Referer%E6%B3%A8%E5%85%A5/</link>
+            <category>SQL注入探究</category>
+            <pubDate>Sat, 01 Oct 2022 23:10:40 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;sql注入之http-referer注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sql注入之http-referer注入&#34;&gt;#&lt;/a&gt; SQL 注入之 HTTP-Referer 注入&lt;/h1&gt;
+&lt;p&gt;本篇讲解 HTTP-Referer 注入&lt;/p&gt;
+&lt;div class=&#34;note info&#34;&gt;
+&lt;p&gt;HTTP-Referer 注入&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;在前几章的博客中，满篇都是对于&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/Cookie%E6%B3%A8%E5%85%A5/</guid>
             <title>Cookie注入</title>

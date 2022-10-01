@@ -5,6 +5,16 @@
     "home_page_url": "https://kiyomijin.github.io",
     "items": [
         {
+            "id": "https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/HTTP-Referer%E6%B3%A8%E5%85%A5/",
+            "url": "https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/HTTP-Referer%E6%B3%A8%E5%85%A5/",
+            "title": "HTTP-Referer注入",
+            "date_published": "2022-10-01T15:10:40.000Z",
+            "content_html": "<h1 id=\"sql注入之http-referer注入\"><a class=\"markdownIt-Anchor\" href=\"#sql注入之http-referer注入\">#</a> SQL 注入之 HTTP-Referer 注入</h1>\n<p>本篇讲解 HTTP-Referer 注入</p>\n<div class=\"note info\">\n<p>HTTP-Referer 注入</p>\n</div>\n<p>在前几章的博客中，满篇都是对于</p>\n",
+            "tags": [
+                "SQL注入探究"
+            ]
+        },
+        {
             "id": "https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/Cookie%E6%B3%A8%E5%85%A5/",
             "url": "https://kiyomijin.github.io/2022/10/01/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/Cookie%E6%B3%A8%E5%85%A5/",
             "title": "Cookie注入",
