@@ -5,14 +5,110 @@
         <link>https://kiyomijin.github.io</link>
         <description></description>
         <language>zh-CN</language>
-        <pubDate>Mon, 03 Oct 2022 00:34:47 +0800</pubDate>
-        <lastBuildDate>Mon, 03 Oct 2022 00:34:47 +0800</lastBuildDate>
+        <pubDate>Mon, 03 Oct 2022 14:44:03 +0800</pubDate>
+        <lastBuildDate>Mon, 03 Oct 2022 14:44:03 +0800</lastBuildDate>
         <category>原创</category>
+        <category>数据库安全</category>
         <category>SQL注入探究</category>
         <category>文件上传漏洞探究</category>
-        <category>数据库安全</category>
         <category>CTF小训</category>
         <category>Misc</category>
+        <item>
+            <guid isPermalink="true">https://kiyomijin.github.io/2022/10/03/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E6%8E%A2%E7%A9%B6/Content-type%E9%AA%8C%E8%AF%81%E5%AE%A1%E8%AE%A1+%E7%BB%95%E8%BF%87/</guid>
+            <title>Content-type验证审计+绕过</title>
+            <link>https://kiyomijin.github.io/2022/10/03/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E6%8E%A2%E7%A9%B6/Content-type%E9%AA%8C%E8%AF%81%E5%AE%A1%E8%AE%A1+%E7%BB%95%E8%BF%87/</link>
+            <category>文件上传漏洞探究</category>
+            <pubDate>Mon, 03 Oct 2022 14:44:03 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;content-type验证审计绕过&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#content-type验证审计绕过&#34;&gt;#&lt;/a&gt; content-type 验证审计 + 绕过&lt;/h1&gt;
+&lt;p&gt;本篇讲解对于文件上传漏洞中 ——content type 验证审计 + 绕过&lt;/p&gt;
+&lt;h2 id=&#34;content-type验证审计&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#content-type验证审计&#34;&gt;#&lt;/a&gt; content-type 验证审计&lt;/h2&gt;
+&lt;p&gt;来到 Pass-02&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003135212262.png&#34; alt=&#34;image-20221003135212262&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们点击上传，会提示 “文件类型不正确，请重新上传”&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003135246520.png&#34; alt=&#34;image-20221003135246520&#34;&gt;&lt;/p&gt;
+&lt;p&gt;不多说，直接开始抓包，看看怎么个情况。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003135340470.png&#34; alt=&#34;image-20221003135340470&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;媒体类型&lt;/strong&gt;（通常称为 &lt;strong&gt;Multipurpose Internet Mail Extensions&lt;/strong&gt; 或 &lt;strong&gt;MIME&lt;/strong&gt; 类型）是一种标准，用来表示文档、文件或字节流的性质和格式。&lt;/p&gt;
+&lt;p&gt;通用结构：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;type/subtype&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;MIME 的组成结构非常简单；由类型与子类型两个字符串中间用 &lt;code&gt;&#39;/&#39;&lt;/code&gt;  分隔而组成。不允许空格存在。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt;  表示可以被分多个子类的独立类别。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;subtype&lt;/code&gt;  表示细分后的每个类型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;独立类型如下&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;text/plain&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;text/html&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;image/jpeg&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;image/png&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;audio/mpeg&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;audio/ogg&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;audio/*&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;video/mp4&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;application/*&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;application/json&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;application/javascript&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;application/ecmascript&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;application/octet-stream&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;…&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003135647652.png&#34; alt=&#34;image-20221003135647652&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上传文件的时候，Content-Type 有两类标识：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;标识文件上传的请求 multipart/form-data【可用于 &lt;code&gt;HTML表单&lt;/code&gt; 从浏览器发送信息给服务器】&lt;/li&gt;
+&lt;li&gt;标识文件类型 application/octet-stream 【这是应用程序文件的默认值。意思是 &lt;code&gt;未知的应用程序文件&lt;/code&gt; ，浏览器一般不会自动执行或询问执行】&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;了解了基本上传格式后，查看源码内容【单击 “显示源码” 按钮】&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003140629128.png&#34; alt=&#34;image-20221003140629128&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这一段的主要逻辑：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;定义 &lt;code&gt;$is_upload&lt;/code&gt;  变量，默认值为 false&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;定义 &lt;code&gt;$msg&lt;/code&gt;  变量，默认值为空&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;isset&lt;/code&gt;  函数判断 &lt;code&gt;submit的POST请求&lt;/code&gt; 是否为空&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果为空，什么都不做&lt;/li&gt;
+&lt;li&gt;如果不为空，则继续往下走&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;判断 &lt;code&gt;UPLOAD_PATH&lt;/code&gt;  上传目录是否存在&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果不存在，则返回 “文件夹不存在，请手工创建”&lt;/li&gt;
+&lt;li&gt;如果存在，则继续往下走&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;判断 &lt;code&gt;upload_file&lt;/code&gt;  的 type 的字段的值是否为 image/jpeg 、png、gif 中的任意一个&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果不是，则返回 &amp;quot;文件类型不正确，请重新上传&amp;quot;&lt;/li&gt;
+&lt;li&gt;如果是，则继续往下走&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;定义一个 &lt;code&gt;$temp_file&lt;/code&gt;  变量，接收 &lt;code&gt;upload_file&lt;/code&gt;  的 &lt;code&gt;tmp_name&lt;/code&gt;  字段的值&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;$ _FILES [&#39;upload_file&#39;]&lt;/code&gt;  表示内置名为 &lt;code&gt;upload_file&lt;/code&gt;  的 &lt;code&gt;FILES数组&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;figcaption data-lang=&#34;PHP&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token class-name type-declaration&#34;&gt;PHP&lt;/span&gt; &lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt; 是一个预定义的数组，用来获取通过 &lt;span class=&#34;token constant&#34;&gt;POST&lt;/span&gt; 方法上传文件的相关信息。&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;如果为单个文件上传，那么 &lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt; 为二维数组；&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;如果为多个文件上传，那么 &lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt; 为三维数组。&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt;数组内容如下&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;upload_file&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt; 客户端文件的原名称。 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;upload_file&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;type&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt; 文件的 &lt;span class=&#34;token constant&#34;&gt;MIME&lt;/span&gt; 类型，需要浏览器提供该信息的支持，例如&lt;span class=&#34;token string double-quoted-string&#34;&gt;&#34;image/gif&#34;&lt;/span&gt;。 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;upload_file&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;size&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt; 已上传文件的大小，单位为字节。 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;upload_file&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;tmp_name&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt; 文件被上传后在服务端储存的临时文件名，一般是系统默认。可以在php&lt;span class=&#34;token operator&#34;&gt;.&lt;/span&gt;ini的upload_tmp_dir 指定，但用&lt;span class=&#34;token function&#34;&gt;putenv&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; 函数设置是不起作用的。 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token variable&#34;&gt;$_FILES&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;upload_file&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;error&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt; 和该文件上传相关的错误代码。&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string single-quoted-string&#34;&gt;&#39;error&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt; 是在 &lt;span class=&#34;token constant&#34;&gt;PHP&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;4.2&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;.0&lt;/span&gt; 版本中增加的。下面是它的说明：&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;它们在&lt;span class=&#34;token constant&#34;&gt;PHP3&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;.0&lt;/span&gt;以后成了常量&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;定义一个 img_path 变量，接收 UPLOAD_PATH+’/’+upload_file 关联信息中 name 字段的值&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;[&#39;name&#39;]&lt;/code&gt;  是表示 &lt;code&gt;文件&amp;quot;在上传者机器上&amp;quot;的文件名&lt;/code&gt;  ，或者叫 &lt;code&gt;客户端文件的原名称&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;判断 &lt;code&gt;move_uploaded_file&lt;/code&gt;  的返回值，其函数原型为 &lt;code&gt;move_uploaded_file( string file, string dest)&lt;/code&gt; ，意为 &lt;code&gt;将上传的file移动到dest&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果临时文件 &lt;code&gt;$temp_file&lt;/code&gt;  成功移动到 &lt;code&gt;$img_path&lt;/code&gt;  当中【&lt;strong&gt;相当于 linux 的 mv 指令&lt;/strong&gt;】，那么就令 &lt;code&gt;$is_upload&lt;/code&gt;  为 &lt;code&gt;true&lt;/code&gt; ，并返回 &amp;quot;上传 Success！&amp;quot;&lt;/li&gt;
+&lt;li&gt;如果没有移动成功，则返回 “上传出错！”&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;content-type绕过&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#content-type绕过&#34;&gt;#&lt;/a&gt; content-type 绕过&lt;/h2&gt;
+&lt;p&gt;抓包后将 &lt;code&gt;Content-type字段的值&lt;/code&gt; 修改为 &lt;code&gt;image/jpeg&lt;/code&gt; 、 &lt;code&gt;image/png&lt;/code&gt; 、 &lt;code&gt;image/gif&lt;/code&gt;  的任何一种即可实现绕过。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003144019576.png&#34; alt=&#34;image-20221003144019576&#34;&gt;&lt;/p&gt;
+&lt;p&gt;修改如下&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003144200588.png&#34; alt=&#34;image-20221003144200588&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;点击 Forward，提示 &amp;quot;上传 Success！&amp;quot;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003144223909.png&#34; alt=&#34;image-20221003144223909&#34;&gt;&lt;/p&gt;
+&lt;p&gt;至此，content-type 验证审计 + 绕过演示完毕。&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">https://kiyomijin.github.io/2022/10/03/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E6%8E%A2%E7%A9%B6/%E5%89%8D%E5%8F%B0JS%E9%AA%8C%E8%AF%81%E5%AE%A1%E8%AE%A1+%E7%BB%95%E8%BF%87/</guid>
             <title>前台JS验证审计+绕过</title>
