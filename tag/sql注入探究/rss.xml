@@ -121,7 +121,7 @@
 &lt;h3 id=&#34;上传按钮代码审计&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#上传按钮代码审计&#34;&gt;#&lt;/a&gt; 上传按钮代码审计&lt;/h3&gt;
 &lt;p&gt;首先我们知道，重要的上传逻辑肯定在这些字样的附近：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20221003124524219.png&#34; alt=&#34;image-20221003124524219&#34;&gt;&lt;/p&gt;
-&lt;p&gt;那么我们找到 **“上传区”、“请选择要上传的图片”** 这个字样，就能精准定位到相关源码附近。&lt;/p&gt;
+&lt;p&gt;那么我们找到 &amp;quot;&lt;strong&gt; 上传区&lt;/strong&gt; &amp;quot;、&amp;quot;&lt;strong&gt; 请选择要上传的图片&lt;/strong&gt; &amp;quot; 这个字样，就能精准定位到相关源码附近。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20221003124332517.png&#34; alt=&#34;image-20221003124332517&#34;&gt;&lt;/p&gt;
 &lt;p&gt;上面一段代码的主要逻辑：&lt;/p&gt;
 &lt;ul&gt;
@@ -160,7 +160,7 @@
 &lt;li&gt;
 &lt;p&gt;如果非空，则继续往下走&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;定义了允许上传的文件类型为 **“.jpg| .png| .gif”**&lt;/li&gt;
+&lt;li&gt;定义了允许上传的文件类型为 “.jpg| .png| .gif”&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;
