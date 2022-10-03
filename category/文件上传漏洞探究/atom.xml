@@ -4,10 +4,10 @@
     <title>My Violet Eva Garden • Posts by &#34;文件上传漏洞探究&#34; category</title>
     <link href="https://kiyomijin.github.io" />
     <updated>2022-10-03T16:52:26.000Z</updated>
-    <category term="SQL注入探究" />
     <category term="原创" />
-    <category term="数据库安全" />
     <category term="文件上传漏洞探究" />
+    <category term="SQL注入探究" />
+    <category term="数据库安全" />
     <category term="CTF小训" />
     <category term="Misc" />
     <entry>
@@ -145,8 +145,8 @@
 &lt;h3 id=&#34;绕过exif_imagety&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#绕过exif_imagety&#34;&gt;#&lt;/a&gt; 绕过 exif_imagety&lt;/h3&gt;
 &lt;p&gt;exif_imagetype () 函数是 PHP 中的内置函数，用于确定图像的类型。&lt;/p&gt;
 &lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;int exif_imagetype( string $filename )&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;** 参数：** 该函数接受单个参数 $filename，该参数保存图像的名称或 URL。&lt;/p&gt;
-&lt;p&gt;** 返回值：** 此函数返回与 IMAGETYPE 常量之一相对应的整数，如下所示：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;参数&lt;/strong&gt;：该函数接受单个参数 $filename，该参数保存图像的名称或 URL。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;返回值&lt;/strong&gt;：此函数返回与 IMAGETYPE 常量之一相对应的整数，如下所示：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;IMAGETYPE_GIF(1)&lt;/li&gt;
 &lt;li&gt;IMAGETYPE_JPEG(2)&lt;/li&gt;
