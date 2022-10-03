@@ -7,8 +7,9 @@
         <language>zh-CN</language>
         <pubDate>Mon, 03 Oct 2022 00:34:47 +0800</pubDate>
         <lastBuildDate>Mon, 03 Oct 2022 00:34:47 +0800</lastBuildDate>
-        <category>SQL注入探究</category>
         <category>原创</category>
+        <category>SQL注入探究</category>
+        <category>文件上传漏洞探究</category>
         <category>数据库安全</category>
         <category>CTF小训</category>
         <category>Misc</category>
@@ -16,7 +17,7 @@
             <guid isPermalink="true">https://kiyomijin.github.io/2022/10/03/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E6%8E%A2%E7%A9%B6/%E5%89%8D%E5%8F%B0JS%E9%AA%8C%E8%AF%81%E5%AE%A1%E8%AE%A1+%E7%BB%95%E8%BF%87/</guid>
             <title>前台JS验证审计+绕过</title>
             <link>https://kiyomijin.github.io/2022/10/03/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E6%8E%A2%E7%A9%B6/%E5%89%8D%E5%8F%B0JS%E9%AA%8C%E8%AF%81%E5%AE%A1%E8%AE%A1+%E7%BB%95%E8%BF%87/</link>
-            <category>SQL注入探究</category>
+            <category>文件上传漏洞探究</category>
             <pubDate>Mon, 03 Oct 2022 00:34:47 +0800</pubDate>
             <description><![CDATA[ &lt;h1 id=&#34;文件上传漏洞&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#文件上传漏洞&#34;&gt;#&lt;/a&gt; 文件上传漏洞&lt;/h1&gt;
 &lt;p&gt;在讲前台 JS 绕过之前，由于是文件上传漏洞探究系列的第一讲，先来简单介绍一下文件上传漏洞。&lt;/p&gt;

@@ -4,8 +4,9 @@
     <title>My Violet Eva Garden</title>
     <link href="https://kiyomijin.github.io" />
     <updated>2022-10-02T16:34:47.000Z</updated>
-    <category term="SQL注入探究" />
     <category term="原创" />
+    <category term="SQL注入探究" />
+    <category term="文件上传漏洞探究" />
     <category term="数据库安全" />
     <category term="CTF小训" />
     <category term="Misc" />
@@ -182,7 +183,7 @@
 &lt;p&gt;&lt;img src=&#34;image-20221003130947145.png&#34; alt=&#34;image-20221003130947145&#34;&gt;&lt;/p&gt;
 &lt;p&gt;我们使用中国菜刀连接获取 webshell 即可。&lt;/p&gt;
 </content>
-        <category term="SQL注入探究" />
+        <category term="文件上传漏洞探究" />
         <updated>2022-10-02T16:34:47.000Z</updated>
     </entry>
     <entry>
