@@ -4,10 +4,10 @@
     <title>My Violet Eva Garden</title>
     <link href="https://kiyomijin.github.io" />
     <updated>2022-10-03T16:52:26.000Z</updated>
-    <category term="SQL注入探究" />
     <category term="原创" />
     <category term="数据库安全" />
     <category term="文件上传漏洞探究" />
+    <category term="SQL注入探究" />
     <category term="CTF小训" />
     <category term="Misc" />
     <entry>
@@ -28,7 +28,7 @@
 &lt;p&gt;上传成功&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20221003221405064.png&#34; alt=&#34;image-20221003221405064&#34;&gt;&lt;/p&gt;
 &lt;p&gt;确实生成了&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5CJcH4liXh%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20221003221432601.png&#34; alt=&#34;image-20221003221432601&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221003221432601.png&#34; alt=&#34;image-20221003221432601&#34;&gt;&lt;/p&gt;
 &lt;p&gt;那也就是说，控制 save_path 是可行的，但想到如果 save_path 变成一个文件路径的话，应该会报错。果不其然&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20221003221709058.png&#34; alt=&#34;image-20221003221709058&#34;&gt;&lt;/p&gt;
 &lt;p&gt;如果 &lt;code&gt;能有这么一种方法&lt;/code&gt; ，能让 save_path&lt;strong&gt; 直接成为最后保存的文件路径该多好&lt;/strong&gt;，比如 &lt;code&gt;save_path=../upload/11.php&lt;/code&gt;&lt;/p&gt;
