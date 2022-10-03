@@ -5,9 +5,9 @@
     <link href="https://kiyomijin.github.io" />
     <updated>2022-10-03T16:52:26.000Z</updated>
     <category term="原创" />
-    <category term="文件上传漏洞探究" />
     <category term="SQL注入探究" />
     <category term="数据库安全" />
+    <category term="文件上传漏洞探究" />
     <category term="CTF小训" />
     <category term="Misc" />
     <entry>
@@ -123,22 +123,26 @@
 &lt;li&gt;索引 mime 给出的是图像的 &lt;code&gt; MIME 信息&lt;/code&gt; ，此信息可以用来在 HTTP  &lt;code&gt;Content-type &lt;/code&gt; 头信息中发送正确的信息，如： header (“Content-type: image/jpeg”);&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;stripos () 函数查找字符串在另一字符串中第一次出现的位置（不区分大小写）。&lt;/p&gt;
-&lt;p&gt;stripos(&lt;em&gt;string,find,start&lt;/em&gt;)&lt;/p&gt;
+&lt;p&gt;stripos(&lt;em&gt;&lt;strong&gt;string&lt;/strong&gt;,&lt;strong&gt;find&lt;/strong&gt;,start&lt;/em&gt;)&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th&gt;&lt;em&gt;string&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;必需。规定被搜索的字符串。&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;参数&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;描述&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td&gt;&lt;em&gt;&lt;strong&gt;find&lt;/strong&gt;&lt;/em&gt;&lt;/td&gt;
-&lt;td&gt;&lt;strong&gt;必需。规定要查找的字符。&lt;/strong&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;string&lt;/strong&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;必需。规定被搜索的字符串。&lt;/strong&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&lt;em&gt;start&lt;/em&gt;&lt;/td&gt;
-&lt;td&gt;可选。规定开始搜索的位置。&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;find&lt;/strong&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;strong&gt;必需。规定要查找的字符。&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;em&gt;start&lt;/em&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;可选。规定开始搜索的位置。&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
