@@ -4,8 +4,8 @@
     <title>My Violet Eva Garden</title>
     <link href="https://kiyomijin.github.io" />
     <updated>2022-10-03T16:52:26.000Z</updated>
-    <category term="原创" />
     <category term="SQL注入探究" />
+    <category term="原创" />
     <category term="数据库安全" />
     <category term="文件上传漏洞探究" />
     <category term="CTF小训" />
@@ -117,7 +117,7 @@
 &lt;li&gt;索引 0 给出的是图像 &lt;code&gt;宽度&lt;/code&gt; 的像素值&lt;/li&gt;
 &lt;li&gt;索引 1 给出的是图像 &lt;code&gt;高度&lt;/code&gt; 的像素值&lt;/li&gt;
 &lt;li&gt;索引 2 给出的是图像的 &lt;code&gt;类型&lt;/code&gt; ，返回的是数字，其中 1 = GIF，2 = JPG，3 = PNG，4 = SWF，5 = PSD，6 = BMP，7 = TIFF (intel byte order)，8 = TIFF (motorola byte order)，9 = JPC，10 = JP2，11 = JPX，12 = JB2，13 = SWC，14 = IFF，15 = WBMP，16 = XBM&lt;/li&gt;
-&lt;li&gt;索引 3 给出的是一个 &lt;code&gt;宽度和高度的字符串&lt;/code&gt; ，可以直接用于 HTML 的 &lt;image&gt; 标签&lt;/li&gt;
+&lt;li&gt;索引 3 给出的是一个 &lt;code&gt;宽度和高度的字符串&lt;/code&gt; ，可以直接用于 HTML 的 image 标签&lt;/li&gt;
 &lt;li&gt;索引 bits 给出的是图像的 &lt;code&gt;每种颜色的位数&lt;/code&gt; ，二进制格式&lt;/li&gt;
 &lt;li&gt;索引 channels 给出的是图像的 &lt;code&gt;通道值&lt;/code&gt; ，RGB 图像 &lt;code&gt;默认是 3&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;索引 mime 给出的是图像的 &lt;code&gt; MIME 信息&lt;/code&gt; ，此信息可以用来在 HTTP  &lt;code&gt;Content-type &lt;/code&gt; 头信息中发送正确的信息，如： header (“Content-type: image/jpeg”);&lt;/li&gt;
