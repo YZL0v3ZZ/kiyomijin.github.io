@@ -5,14 +5,118 @@
         <link>https://kiyomijin.github.io</link>
         <description></description>
         <language>zh-CN</language>
-        <pubDate>Tue, 04 Oct 2022 10:51:46 +0800</pubDate>
-        <lastBuildDate>Tue, 04 Oct 2022 10:51:46 +0800</lastBuildDate>
+        <pubDate>Wed, 05 Oct 2022 00:56:24 +0800</pubDate>
+        <lastBuildDate>Wed, 05 Oct 2022 00:56:24 +0800</lastBuildDate>
         <category>原创</category>
+        <category>XSS跨站脚本攻击探究</category>
         <category>SQL注入探究</category>
-        <category>文件上传漏洞探究</category>
         <category>数据库安全</category>
+        <category>文件上传漏洞探究</category>
         <category>CTF小训</category>
         <category>Misc</category>
+        <item>
+            <guid isPermalink="true">https://kiyomijin.github.io/2022/10/05/XSS%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB%E6%8E%A2%E7%A9%B6/XSS%E4%BB%8B%E7%BB%8D/</guid>
+            <title>XSS介绍</title>
+            <link>https://kiyomijin.github.io/2022/10/05/XSS%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB%E6%8E%A2%E7%A9%B6/XSS%E4%BB%8B%E7%BB%8D/</link>
+            <category>XSS跨站脚本攻击探究</category>
+            <pubDate>Wed, 05 Oct 2022 00:56:24 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;xss跨站脚本介绍&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#xss跨站脚本介绍&#34;&gt;#&lt;/a&gt; XSS 跨站脚本介绍&lt;/h1&gt;
+&lt;p&gt;跨站脚本攻击（Cross Site Scripting）是指攻击者利用网站程序对&lt;strong&gt;用户输入过滤不足&lt;/strong&gt;，输入可以显示在页面上对其他用户（普通用户、第三方用户、网站拥有者）造成影响的 &lt;code&gt;HTML+Js&lt;/code&gt;  代码，从而&lt;strong&gt;盗取用户资料&lt;/strong&gt;、&lt;strong&gt;利用用户身份进行某种动作&lt;/strong&gt;或者&lt;strong&gt;对访问者进行病毒侵害&lt;/strong&gt;的一种攻击方式。&lt;/p&gt;
+&lt;p&gt;为了与层叠样式表（Cascading Style Sheets）的缩写 CSS 区分开，跨站脚本攻击通常简写为 &lt;code&gt;XSS&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004202321913.png&#34; alt=&#34;image-20221004202321913&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;反射型xss&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#反射型xss&#34;&gt;#&lt;/a&gt; 反射型 XSS&lt;/h2&gt;
+&lt;p&gt;发射型就是将应用程序的运行结果或错误返回到页面上显示。典型的反射型 XSS 是在搜索框里体现。&lt;/p&gt;
+&lt;h2 id=&#34;存储型xss&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#存储型xss&#34;&gt;#&lt;/a&gt; 存储型 XSS&lt;/h2&gt;
+&lt;p&gt;存储在服务器、数据库（后台）上，能稳定持久执行的跨站脚本。&lt;/p&gt;
+&lt;h2 id=&#34;dom型xss&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#dom型xss&#34;&gt;#&lt;/a&gt; DOM 型 XSS&lt;/h2&gt;
+&lt;p&gt;能够构成 HTML 的 DOM 树的一部分，或者能够影响 DOM 结构的跨站脚本。&lt;/p&gt;
+&lt;h1 id=&#34;xss攻击方式与样例&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#xss攻击方式与样例&#34;&gt;#&lt;/a&gt; XSS 攻击方式与样例&lt;/h1&gt;
+&lt;h2 id=&#34;xss盗用用户信息&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#xss盗用用户信息&#34;&gt;#&lt;/a&gt; XSS 盗用用户信息&lt;/h2&gt;
+&lt;h2 id=&#34;xss盗取cookie&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#xss盗取cookie&#34;&gt;#&lt;/a&gt; XSS 盗取 Cookie&lt;/h2&gt;
+&lt;h2 id=&#34;xss钓鱼攻击&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#xss钓鱼攻击&#34;&gt;#&lt;/a&gt; XSS 钓鱼攻击&lt;/h2&gt;
+&lt;p&gt;链接上含有攻击代码&lt;/p&gt;
+&lt;h2 id=&#34;xss蠕虫攻击&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#xss蠕虫攻击&#34;&gt;#&lt;/a&gt; XSS 蠕虫攻击&lt;/h2&gt;
+&lt;p&gt;XSS 蠕虫的破坏力和影响力都是巨大的。XSS 蠕虫主要发生在用户之间存在交互行为的页面中，当 Web 引用程序对用户输入的数据信息没有做严格的过滤时，通过结合用户的登录状态、API 调用、 &lt;code&gt;Ajax的异步提交&lt;/code&gt; ，就可以实现在植入恶意代码的同时，将恶意代码进行对外发送，即实现了代码的感染和传播，也就形成了 XSS 蠕虫。&lt;/p&gt;
+&lt;p&gt;MySpace 的 Samy XSS 蠕虫攻击事件是出现最早、最出名的 XSS 蠕虫攻击事件。&lt;/p&gt;
+&lt;h1 id=&#34;通过实验深入了解xss三个分类&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#通过实验深入了解xss三个分类&#34;&gt;#&lt;/a&gt; 通过实验深入了解 XSS 三个分类&lt;/h1&gt;
+&lt;p&gt;首先我们安装 DVWA，使用账号：admin，密码：password 进行登录&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;注意&lt;/code&gt; ：如果登录不上去，就访问 &lt;code&gt;127.0.0.1/dvwa/setup.php&lt;/code&gt; ，点击最下方的 &lt;code&gt;Create/Reset&lt;/code&gt;  按钮&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004210441095.png&#34; alt=&#34;image-20221004210441095&#34;&gt;&lt;/p&gt;
+&lt;p&gt;设置 DVWA Security【从最低难度 low 开始吧】，点击 &lt;code&gt;submit&lt;/code&gt;  等待刷新设置完成&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004210537809.png&#34; alt=&#34;image-20221004210537809&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;dom型xss-2&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#dom型xss-2&#34;&gt;#&lt;/a&gt; DOM 型 XSS&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004210944194.png&#34; alt=&#34;image-20221004210944194&#34;&gt;&lt;/p&gt;
+&lt;p&gt;首先我们看到下拉框，就要想一想，这个下拉框是从哪里来的。&lt;/p&gt;
+&lt;p&gt;我们可以 F12 刷新，看一下 XHR 请求【Ajax】&lt;/p&gt;
+&lt;p&gt;这里讲一下 &lt;code&gt;XHR&lt;/code&gt;  和 &lt;code&gt;AJax&lt;/code&gt;  的关系&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;XMLHttpRequest&lt;/code&gt;  （简称 &lt;code&gt;XHR&lt;/code&gt; ）对象用于和服务器交换数据，是基于 &lt;code&gt;XML&lt;/code&gt;  的 &lt;code&gt;HTTP&lt;/code&gt;  请求。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;XMLHttpRequest&lt;/code&gt;  是一个浏览器接口，使得 &lt;code&gt;Javascript&lt;/code&gt;  可以进行 &lt;code&gt;HTTP(S)&lt;/code&gt;  通信。&lt;/li&gt;
+&lt;li&gt;自从浏览器提供有了 &lt;code&gt;XMLHTTPRequest&lt;/code&gt;  这个接口之后，Ajax 操作就此诞生。&lt;/li&gt;
+&lt;li&gt;我们再来说说什么是 &lt;code&gt;Ajax&lt;/code&gt; ， &lt;code&gt;Ajax&lt;/code&gt;  即  &lt;code&gt;Asynchronous JavaScript and XML&lt;/code&gt; ，翻译为： &lt;code&gt;异步&lt;/code&gt; 的  &lt;code&gt;JavaScript &lt;/code&gt; 和 &lt;code&gt; XML&lt;/code&gt; 。【&lt;strong&gt;重点！！&lt;/strong&gt;】&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Ajax&lt;/code&gt;  就是基于浏览器提供的 &lt;code&gt;XMLHttpRequest&lt;/code&gt;  对象来实现的。【&lt;strong&gt;重点！！&lt;/strong&gt;】&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;传统的网页（不使用 Ajax）如果需要更新内容，必需重载整个网页面。&lt;/p&gt;
+&lt;p&gt;自从有了 Ajax 之后，我们就可以实现&lt;strong&gt;异步地加载网页&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;什么叫异步？&lt;/p&gt;
+&lt;p&gt;异步，异嘛，不同的意思，这里也就是指 &lt;code&gt;不跟&lt;/code&gt; 浏览器加载执行网页代码的 &lt;code&gt;步伐&lt;/code&gt; 一致，也就是说在一个网页中 &lt;code&gt;需要用户操作来触发执行代码&lt;/code&gt; ，而不是整个网页代码 &lt;code&gt;一次性执行完毕&lt;/code&gt;  (这里的用户操作是指在同一个网页下面请求代码执行渲染，而不是让浏览器直接跳转渲染另一个页面)。&lt;/p&gt;
+&lt;p&gt;Ajax 指的是异步 JavaScript 和 XML（Asynchronous JavaScript and XML）。所以，XMLHttpRequest 对象如果要用于 Ajax 的话，其 open () 方法的 async 参数必须设置为 true。&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;xmlhttp.&lt;span class=&#34;title function_ invoke__&#34;&gt;open&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;quot;GET&amp;quot;&lt;/span&gt;,&lt;span class=&#34;string&#34;&gt;&amp;quot;ajax_test.html&amp;quot;&lt;/span&gt;,&lt;span class=&#34;literal&#34;&gt;true&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004211458850.png&#34; alt=&#34;image-20221004211458850&#34;&gt;&lt;/p&gt;
+&lt;p&gt;所以表明，这个页面&lt;strong&gt;没有单独去请求一个功能链接&lt;/strong&gt;来返回下拉链表内容。&lt;/p&gt;
+&lt;p&gt;因此，我们直接去看源代码，鼠标右键，查看源代码【XSS 攻击是基于前台源码的攻击】。&lt;/p&gt;
+&lt;p&gt;搜索关键字符：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004213743525.png&#34; alt=&#34;image-20221004213743525&#34;&gt;&lt;/p&gt;
+&lt;p&gt;对于 HTML 的标签基本定义如下&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;div&lt;/span&gt;&amp;gt;&lt;/span&gt; 标签定义 HTML 文档中的一个分隔区块或者一个区域部分。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;div&lt;/span&gt;&amp;gt;&lt;/span&gt;标签常用于组合块级元素，以便通过 CSS 来对这些元素进行格式化。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;p&lt;/span&gt;&amp;gt;&lt;/span&gt; 标签用于定义一个段落。 段落和段落之间有空隙。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;form&lt;/span&gt;&amp;gt;&lt;/span&gt; 标签用于创建供用户输入的 HTML 表单。表单用于向服务端发送数据。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;form&lt;/span&gt;&amp;gt;&lt;/span&gt; 元素包含一个或多个如下的表单元素：&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;input&lt;/span&gt;&amp;gt;&lt;/span&gt; 有输入框&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;textarea&lt;/span&gt;&amp;gt;&lt;/span&gt;  标签定义多行的文本输入控件&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;button&lt;/span&gt;&amp;gt;&lt;/span&gt; 提交按钮&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;select&lt;/span&gt;&amp;gt;&lt;/span&gt; 有下拉菜单属性&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt;&amp;gt;&lt;/span&gt; 单选框&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;optgroup&lt;/span&gt;&amp;gt;&lt;/span&gt; 复选框&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;fieldset&lt;/span&gt;&amp;gt;&lt;/span&gt; 标签将表单内容的一部分打包，生成一组相关表单的字段。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;label&lt;/span&gt;&amp;gt;&lt;/span&gt; 标签为 input 元素定义标注（标记）。&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;其中，源码中显示这个 form 标签里面嵌有一段 script 标签引起的 JavaScript 代码&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;language-handlebars&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;    if (document.location.href.indexOf(&amp;quot;default=&amp;quot;) &amp;gt;= 0) &amp;#123;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;        var lang = document.location.href.substring(document.location.href.indexOf(&amp;quot;default=&amp;quot;)+8);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;        document.write(&amp;quot;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt; &lt;span class=&#34;attr&#34;&gt;value&lt;/span&gt;=&lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;quot; + lang + &amp;quot;&amp;#x27;&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;quot; + (lang) + &amp;quot;&lt;span class=&#34;tag&#34;&gt;&amp;lt;/&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;quot;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;        document.write(&amp;quot;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt; &lt;span class=&#34;attr&#34;&gt;value&lt;/span&gt;=&lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#x27;&lt;/span&gt; &lt;span class=&#34;attr&#34;&gt;disabled&lt;/span&gt;=&lt;span class=&#34;string&#34;&gt;&amp;#x27;disabled&amp;#x27;&lt;/span&gt;&amp;gt;&lt;/span&gt;----&lt;span class=&#34;tag&#34;&gt;&amp;lt;/&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;quot;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;    &amp;#125;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;    document.write(&amp;quot;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt; &lt;span class=&#34;attr&#34;&gt;value&lt;/span&gt;=&lt;span class=&#34;string&#34;&gt;&amp;#x27;English&amp;#x27;&lt;/span&gt;&amp;gt;&lt;/span&gt;English&lt;span class=&#34;tag&#34;&gt;&amp;lt;/&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;quot;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;    document.write(&amp;quot;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt; &lt;span class=&#34;attr&#34;&gt;value&lt;/span&gt;=&lt;span class=&#34;string&#34;&gt;&amp;#x27;French&amp;#x27;&lt;/span&gt;&amp;gt;&lt;/span&gt;French&lt;span class=&#34;tag&#34;&gt;&amp;lt;/&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;quot;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;    document.write(&amp;quot;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt; &lt;span class=&#34;attr&#34;&gt;value&lt;/span&gt;=&lt;span class=&#34;string&#34;&gt;&amp;#x27;Spanish&amp;#x27;&lt;/span&gt;&amp;gt;&lt;/span&gt;Spanish&lt;span class=&#34;tag&#34;&gt;&amp;lt;/&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;quot;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;    document.write(&amp;quot;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt; &lt;span class=&#34;attr&#34;&gt;value&lt;/span&gt;=&lt;span class=&#34;string&#34;&gt;&amp;#x27;German&amp;#x27;&lt;/span&gt;&amp;gt;&lt;/span&gt;German&lt;span class=&#34;tag&#34;&gt;&amp;lt;/&lt;span class=&#34;name&#34;&gt;option&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;quot;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;language-xml&#34;&gt;&lt;span class=&#34;language-handlebars&#34;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;tag&#34;&gt;&amp;lt;/&lt;span class=&#34;name&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;主逻辑是：&lt;/p&gt;
+&lt;p&gt;获取当前 form 表单 document 的 location 对象的 href（当前浏览的 url 值，对于下图就是 &lt;code&gt;http://127.0.0.1/DVWA/vulnerabilities/xss_d/&lt;/code&gt; ）&lt;/p&gt;
+&lt;p&gt;然后判断这个 url 字符串中 “default=” 第一次出现的位置是否 &amp;gt;=0&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004215924339.png&#34; alt=&#34;image-20221004215924339&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当然，我们回到刚刚的页面上就是在获取这个 url&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://127.0.0.1/DVWA/vulnerabilities/xss_d/?default=English&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004220400905.png&#34; alt=&#34;image-20221004220400905&#34;&gt;&lt;/p&gt;
+&lt;p&gt;substring(start,stop)&lt;/p&gt;
+&lt;p&gt;然后截取从 “default=” 第一次出现的位置 + 8【也就是 = 号右边第一个字符，把整个 “default=” 跨了过去】到结尾的内容的字符串，保存到 lang 变量。&lt;/p&gt;
+&lt;p&gt;往 document，也就是当前 html 页面的 option 标签的 value 值中写入刚刚获取到的 lang 值，其选项显示部分使用 decoreURI 对 lang 进行解码，由于 English 中未含有非英文部分，所以就是 English。【这一步会往选项里再添加一个 English】&lt;/p&gt;
+&lt;p&gt;接着往当前 html 页面的 option 标签里的 value 写入空，且关闭其选择属性，加入 ---- 这个选项。【这一步会往选项里再添加一个 ----】&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004221129050.png&#34; alt=&#34;image-20221004221129050&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么，我们可以看到，这个 lang 是从当前 url 里获取到的，且未经过任何校验就直接写入标签中。&lt;/p&gt;
+&lt;p&gt;我们可以控制这个 lang 变量，使其直接执行 js 脚本&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004221907384.png&#34; alt=&#34;image-20221004221907384&#34;&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;comment&#34;&gt;//127.0.0.1/DVWA/vulnerabilities/xss_d/?default=&amp;lt;script&amp;gt;alert(/xss/)&amp;lt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004222113645.png&#34; alt=&#34;image-20221004222113645&#34;&gt;&lt;/p&gt;
+&lt;p&gt;其改变了当前 HTML 的页面 DOM 结构，因此，我们称其为 DOM 型 XSS 攻击。&lt;/p&gt;
+&lt;h2 id=&#34;反射型xss-2&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#反射型xss-2&#34;&gt;#&lt;/a&gt; 反射型 XSS&lt;/h2&gt;
+&lt;p&gt;我们输入 11111，结果看到页面回显了 &amp;quot;Hello 11111&amp;quot;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004222654007.png&#34; alt=&#34;image-20221004222654007&#34;&gt;&lt;/p&gt;
+&lt;p&gt;看一下前台代码，是使用 GET 请求去将获取 text 的内容发送给服务器，而 text 我们可控&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004222954963.png&#34; alt=&#34;image-20221004222954963&#34;&gt;&lt;/p&gt;
+&lt;p&gt;输入 11111，会回显到前台。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004223147315.png&#34; alt=&#34;image-20221004223147315&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么，我们发现 11111 可能未经过处理，直接放入 pre 标签显示。&lt;/p&gt;
+&lt;p&gt;因此可以在 pre 标签里插入 script 标签，完成弹窗操作。&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;tag&#34;&gt;&amp;lt;&lt;span class=&#34;name&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;alert(666)&lt;span class=&#34;tag&#34;&gt;&amp;lt;/&lt;span class=&#34;name&#34;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004223056096.png&#34; alt=&#34;image-20221004223056096&#34;&gt;&lt;/p&gt;
+&lt;p&gt;因为这个页面将一些交互内容回显到了前台上，使得我们成功利用 Js 脚本完成攻击，我们称其为反射型 XSS 攻击。&lt;/p&gt;
+&lt;h2 id=&#34;存储型xss-2&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#存储型xss-2&#34;&gt;#&lt;/a&gt; 存储型 XSS&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004223720910.png&#34; alt=&#34;image-20221004223720910&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们通过留言功能，可以看到我们的输入会被记录在页面上。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004223847678.png&#34; alt=&#34;image-20221004223847678&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们按照刚刚的思路，直接尝试看看能否弹窗。&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;Name：jack&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;Message：&amp;lt;script&amp;gt;alert(1234)&amp;lt;/script&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;刷新回来后会一直弹窗&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004224120560.png&#34; alt=&#34;image-20221004224120560&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们看下源码信息&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004224444379.png&#34; alt=&#34;image-20221004224444379&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们看到 Name 的 maxlength 为 10，Message 的 length 为 50，所以使用 Message 来做 XSS 攻击更合适一些&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&amp;lt;script&amp;gt;alert()&amp;lt;/script&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;最简短的js脚本也有24个字符&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221004224705526.png&#34; alt=&#34;image-20221004224705526&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如果两个长度都不限，则都适合用来 XSS 攻击。&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">https://kiyomijin.github.io/2022/10/04/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E6%8E%A2%E7%A9%B6/%E7%89%B9%E6%AE%8A%E7%9A%84%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%EF%BC%88%E4%BA%8C%EF%BC%89/</guid>
             <title>特殊的文件上传漏洞（二）</title>
