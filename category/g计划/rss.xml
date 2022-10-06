@@ -7,11 +7,11 @@
         <language>zh-CN</language>
         <pubDate>Thu, 06 Oct 2022 13:47:55 +0800</pubDate>
         <lastBuildDate>Thu, 06 Oct 2022 13:47:55 +0800</lastBuildDate>
-        <category>SQL注入探究</category>
-        <category>G计划</category>
         <category>原创</category>
         <category>XSS跨站脚本攻击探究</category>
+        <category>G计划</category>
         <category>数据库安全</category>
+        <category>SQL注入探究</category>
         <category>文件上传漏洞探究</category>
         <category>CTF小训</category>
         <category>Misc</category>
@@ -21,19 +21,57 @@
             <link>https://kiyomijin.github.io/2022/10/06/G%E8%AE%A1%E5%88%92/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80/</link>
             <category>G计划</category>
             <pubDate>Thu, 06 Oct 2022 13:47:55 +0800</pubDate>
-            <description><![CDATA[ &lt;h1 id=&#34;密码学基础&#34;&gt;&lt;a href=&#34;#密码学基础&#34; class=&#34;headerlink&#34; title=&#34;密码学基础&#34;&gt;&lt;/a&gt;密码学基础&lt;/h1&gt;&lt;h2 id=&#34;分组密码学原理与应用&#34;&gt;&lt;a href=&#34;#分组密码学原理与应用&#34; class=&#34;headerlink&#34; title=&#34;分组密码学原理与应用&#34;&gt;&lt;/a&gt;分组密码学原理与应用&lt;/h2&gt;&lt;h3 id=&#34;原理&#34;&gt;&lt;a href=&#34;#原理&#34; class=&#34;headerlink&#34; title=&#34;原理&#34;&gt;&lt;/a&gt;原理&lt;/h3&gt;&lt;p&gt;对称密钥密码体制又称分组密码体制、单密钥密码体制，是 &lt;wavy&gt;加密密钥&lt;/wavy&gt; 和 &lt;wavy&gt;解密密钥&lt;/wavy&gt; &lt;code&gt;相同&lt;/code&gt;的密码体制。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;加密算法&lt;/code&gt;、&lt;code&gt;解密算法&lt;/code&gt;是&lt;mark class=&#34;hl-label red&#34;&gt;公开&lt;/mark&gt; 的。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;加密算法&lt;/code&gt;必须足够&lt;code&gt;复杂&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;其&lt;code&gt;密钥必须保密&lt;/code&gt;并且有足够大的密钥空间，从而使得攻击者在&lt;code&gt;截取密文&lt;/code&gt;和&lt;code&gt;知道加密算法&lt;/code&gt;的情况下，仍然&lt;code&gt;无法还原&lt;/code&gt;出&lt;code&gt;明文&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;假设网络中有&lt;code&gt;n个&lt;/code&gt;使用者，使用者之间共享&lt;code&gt;1个&lt;/code&gt;秘钥，则共有&lt;code&gt;n（n-1）/2个&lt;/code&gt;秘钥。&lt;/p&gt;
-&lt;p&gt;分组密码典型算法有：&lt;code&gt;DES&lt;/code&gt;、&lt;code&gt;IDEA&lt;/code&gt;、&lt;code&gt;AES&lt;/code&gt;。&lt;/p&gt;
-&lt;h3 id=&#34;优点&#34;&gt;&lt;a href=&#34;#优点&#34; class=&#34;headerlink&#34; title=&#34;优点&#34;&gt;&lt;/a&gt;优点&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;私钥密码算法&lt;/strong&gt;&lt;code&gt;处理速度快&lt;/code&gt;，人们常常将其用作&lt;code&gt;数据加密处理&lt;/code&gt;。&lt;/p&gt;
-&lt;h3 id=&#34;缺点&#34;&gt;&lt;a href=&#34;#缺点&#34; class=&#34;headerlink&#34; title=&#34;缺点&#34;&gt;&lt;/a&gt;缺点&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;密钥&lt;code&gt;分配&lt;/code&gt;问题&lt;/li&gt;
-&lt;li&gt;密钥&lt;code&gt;管理&lt;/code&gt;问题&lt;/li&gt;
-&lt;li&gt;无法认证&lt;code&gt;源&lt;/code&gt;&lt;/li&gt;
+            <description><![CDATA[ &lt;h1 id=&#34;密码学基础&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#密码学基础&#34;&gt;#&lt;/a&gt; 密码学基础&lt;/h1&gt;
+&lt;h2 id=&#34;分组密码学原理与应用&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#分组密码学原理与应用&#34;&gt;#&lt;/a&gt; 分组密码学原理与应用&lt;/h2&gt;
+&lt;h3 id=&#34;原理&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#原理&#34;&gt;#&lt;/a&gt; 原理&lt;/h3&gt;
+&lt;p&gt;对称密钥密码体制又称分组密码体制、单密钥密码体制，是 &lt;wavy&gt;加密密钥&lt;/wavy&gt; 和 &lt;wavy&gt;解密密钥&lt;/wavy&gt;  &lt;code&gt;相同&lt;/code&gt; 的密码体制。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;加密算法&lt;/code&gt; 、 &lt;code&gt;解密算法&lt;/code&gt; 是&lt;mark class=&#34;hl-label red&#34;&gt;公开&lt;/mark&gt; 的。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;加密算法&lt;/code&gt; 必须足够 &lt;code&gt;复杂&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;其 &lt;code&gt;密钥必须保密&lt;/code&gt; 并且有足够大的密钥空间，从而使得攻击者在 &lt;code&gt;截取密文&lt;/code&gt; 和 &lt;code&gt;知道加密算法&lt;/code&gt; 的情况下，仍然 &lt;code&gt;无法还原&lt;/code&gt; 出 &lt;code&gt;明文&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;假设网络中有 &lt;code&gt;n个&lt;/code&gt; 使用者，使用者之间共享 &lt;code&gt;1个&lt;/code&gt; 秘钥，则共有 &lt;code&gt;n（n-1）/2个&lt;/code&gt; 秘钥。&lt;/p&gt;
+&lt;p&gt;分组密码典型算法有： &lt;code&gt;DES&lt;/code&gt; 、 &lt;code&gt;IDEA&lt;/code&gt; 、 &lt;code&gt;AES&lt;/code&gt; 。&lt;/p&gt;
+&lt;h3 id=&#34;优点&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#优点&#34;&gt;#&lt;/a&gt; 优点&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;私钥密码算法&lt;/strong&gt; &lt;code&gt;处理速度快&lt;/code&gt; ，人们常常将其用作 &lt;code&gt;数据加密处理&lt;/code&gt; 。&lt;/p&gt;
+&lt;h3 id=&#34;缺点&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#缺点&#34;&gt;#&lt;/a&gt; 缺点&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;密钥 &lt;code&gt;分配&lt;/code&gt; 问题&lt;/li&gt;
+&lt;li&gt;密钥 &lt;code&gt;管理&lt;/code&gt; 问题&lt;/li&gt;
+&lt;li&gt;无法认证 &lt;code&gt;源&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;公钥密码学原理与应用&#34;&gt;&lt;a href=&#34;#公钥密码学原理与应用&#34; class=&#34;headerlink&#34; title=&#34;公钥密码学原理与应用&#34;&gt;&lt;/a&gt;公钥密码学原理与应用&lt;/h2&gt; ]]></description>
+&lt;h3 id=&#34;应用&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#应用&#34;&gt;#&lt;/a&gt; 应用&lt;/h3&gt;
+&lt;h4 id=&#34;des64-56&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#des64-56&#34;&gt;#&lt;/a&gt; DES【64-56】&lt;/h4&gt;
+&lt;div class=&#34;note blue icon-padding simple&#34;&gt;&lt;i class=&#34;note-icon fas fa-battery-half&#34;&gt;&lt;/i&gt;&lt;p&gt;DES 是分组加密算法，能够支持 64 比特的明文块加密，其密钥长度为 56 比特。&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;三重DES&lt;/code&gt; （Triple Data Encryption Algorithm， &lt;code&gt;TDEA&lt;/code&gt; ），也称为 &lt;code&gt;3DES&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;工作机制是使用 DES 对明文进行&lt;mark class=&#34;hl-label blue&#34;&gt;加密一解密一加密&lt;/mark&gt;  操作，即对 DES 加密后的密文进行解密再加密，而解密则相反。&lt;/p&gt;
+&lt;p&gt;设 &lt;code&gt;EK()&lt;/code&gt;  和 &lt;code&gt;DK()&lt;/code&gt;  代表 DES 算法的加密和解密过程，代表 DES 算法使用的密钥， &lt;code&gt;I&lt;/code&gt;  代表明文输入， &lt;code&gt;O&lt;/code&gt;  代表密文输出。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;TDEA&lt;/strong&gt;  &lt;code&gt;加密&lt;/code&gt;  操作如下: &lt;mark class=&#34;hl-label blue&#34;&gt;加密一解密一加密&lt;/mark&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;TDEA&lt;/strong&gt;  &lt;code&gt;解密&lt;/code&gt;  操作如下: &lt;mark class=&#34;hl-label pink&#34;&gt;解密-加密-解密&lt;/mark&gt; &lt;/p&gt;
+&lt;h4 id=&#34;idea64-128&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#idea64-128&#34;&gt;#&lt;/a&gt; IDEA【64-128】&lt;/h4&gt;
+&lt;div class=&#34;note blue icon-padding simple&#34;&gt;&lt;i class=&#34;note-icon fas fa-battery-half&#34;&gt;&lt;/i&gt;&lt;p&gt;IDEA（International Data Encryption Algorithm）是国际数据加密算法的简记，是一个分组加密处理算法，其明文和密文分组都是 64 比特，密钥长度为 128 比特。&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;该算法是由来学嘉（X.J.Lai）和 Massey 提出的建议标准算法，已在 &lt;code&gt;PGP&lt;/code&gt;  中得到应用。&lt;/p&gt;
+&lt;wavy&gt;既可用于加密又可用于解密&lt;/wavy&gt; ，该算法的设计思想是&lt;mark class=&#34;hl-label pink&#34;&gt;混合使用来自不同代数群中的运算&lt;/mark&gt; 。
+&lt;h4 id=&#34;aes64-128-192-256&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#aes64-128-192-256&#34;&gt;#&lt;/a&gt; AES【64-128、192、256】&lt;/h4&gt;
+&lt;div class=&#34;note blue icon-padding simple&#34;&gt;&lt;i class=&#34;note-icon fas fa-battery-half&#34;&gt;&lt;/i&gt;&lt;p&gt;AES 是确定非保密的、公开的、全球免费使用的分组密码算法。&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;特点：&lt;/p&gt;
+&lt;p&gt;其密码&lt;wavy&gt;必须是没有密级&lt;/wavy&gt; 的，绝不能像商业秘密那样来保护它&lt;/p&gt;
+&lt;p&gt;算法的全部描述&lt;wavy&gt;必须公开披露&lt;/wavy&gt;&lt;/p&gt;
+&lt;p&gt;密码&lt;wavy&gt;必须可以在世界范围内免费使用&lt;/wavy&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;分组长度&lt;/code&gt; 至少为 &lt;code&gt;128比特&lt;/code&gt; ， &lt;code&gt;密钥长度&lt;/code&gt; 至少为 &lt;code&gt;128、192和256比特&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;从参与 AES 的候选算法中，最终选择  &lt;code&gt;Rijndael&lt;/code&gt;  作为  &lt;code&gt;AES&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;国产密码中的&lt;/p&gt;
+&lt;h4 id=&#34;sm1128-128&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sm1128-128&#34;&gt;#&lt;/a&gt; SM1【128-128】&lt;/h4&gt;
+&lt;div class=&#34;note blue icon-padding simple&#34;&gt;&lt;i class=&#34;note-icon fas fa-battery-half&#34;&gt;&lt;/i&gt;&lt;p&gt;SM1 算法是一种对称加密算法，分组长度为 128 比特，密钥长度为 128 比特。&lt;/p&gt;
+&lt;/div&gt;
+&lt;h4 id=&#34;sm4128-128&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#sm4128-128&#34;&gt;#&lt;/a&gt; SM4【128-128】&lt;/h4&gt;
+&lt;div class=&#34;note blue icon-padding simple&#34;&gt;&lt;i class=&#34;note-icon fas fa-battery-half&#34;&gt;&lt;/i&gt;&lt;p&gt;SM4 算法也是一种对称加密算法，分组长度为 128 比特，密钥长度为 128 比特。&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;加密算法与密钥扩展算法都采用 32 轮非线性迭代结构。&lt;/p&gt;
+&lt;p&gt;数据解密和数据加密的算法结构相同，只是轮密钥的使用顺序相反，解密轮密钥是加密轮密钥的逆序。详见 GM/T0002-2012《SM4 分组密码算法》。&lt;/p&gt;
+&lt;h2 id=&#34;公钥密码学原理与应用&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#公钥密码学原理与应用&#34;&gt;#&lt;/a&gt; 公钥密码学原理与应用&lt;/h2&gt;
+ ]]></description>
         </item>
     </channel>
 </rss>

@@ -7,11 +7,11 @@
         <language>zh-CN</language>
         <pubDate>Sat, 17 Sep 2022 14:02:32 +0800</pubDate>
         <lastBuildDate>Sat, 17 Sep 2022 14:02:32 +0800</lastBuildDate>
-        <category>SQL注入探究</category>
-        <category>G计划</category>
         <category>原创</category>
         <category>XSS跨站脚本攻击探究</category>
+        <category>G计划</category>
         <category>数据库安全</category>
+        <category>SQL注入探究</category>
         <category>文件上传漏洞探究</category>
         <category>CTF小训</category>
         <category>Misc</category>
@@ -22,27 +22,30 @@
             <category>CTF小训</category>
             <category>Misc</category>
             <pubDate>Sat, 17 Sep 2022 14:02:32 +0800</pubDate>
-            <description><![CDATA[ &lt;h2 id=&#34;0x01-知识点&#34;&gt;&lt;a href=&#34;#0x01-知识点&#34; class=&#34;headerlink&#34; title=&#34;0x01 知识点&#34;&gt;&lt;/a&gt;&lt;strong&gt;0x01 知识点&lt;/strong&gt;&lt;/h2&gt;&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;typedef FrameHeader&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;#123;// 类型     字段名:bit数&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int sync:12;                        //同步信息&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int version:2;                      //版本&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int layer: 2;                       //层&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int error protection:1;             //CRC校验&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int bitrate_index:4;                //位率&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int sampling_frequency:2;           //采样频率&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int padding:1;                      //帧长调节&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int private:1;                      //保留字 【通常藏有flag】&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int mode:2;                         //声道模式&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int mode extension:2;        		 //扩充模式&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int copyright:1;                    //版权   【通常藏有flag】&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int original:1;                     //原版标志&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int emphasis:2;                     //强调模式&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+            <description><![CDATA[ &lt;h2 id=&#34;0x01-知识点&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x01-知识点&#34;&gt;#&lt;/a&gt; &lt;strong&gt;0x01 知识点&lt;/strong&gt;&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;typedef FrameHeader&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;#123;// 类型     字段名:bit数&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int sync:12;                        //同步信息&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int version:2;                      //版本&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int layer: 2;                       //层&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int error protection:1;             //CRC校验&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int bitrate_index:4;                //位率&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int sampling_frequency:2;           //采样频率&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int padding:1;                      //帧长调节&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int private:1;                      //保留字 【通常藏有flag】&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int mode:2;                         //声道模式&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int mode extension:2;        		 //扩充模式&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int copyright:1;                    //版权   【通常藏有flag】&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int original:1;                     //原版标志&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;unsigned int emphasis:2;                     //强调模式&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;ul&gt;
-&lt;li&gt;帧长度是压缩时每一帧的长度，&lt;code&gt;包括帧头&lt;/code&gt;的4个字节（32bit）。它将填充的空位也计算在内。&lt;/li&gt;
-&lt;li&gt;padding的值会影响每一帧的长度（具体分析见下面的题目），因为只有1位，因此长度也只限于在0和1之间变化&lt;/li&gt;
+&lt;li&gt;帧长度是压缩时每一帧的长度， &lt;code&gt;包括帧头&lt;/code&gt; 的 4 个字节（32bit）。它将填充的空位也计算在内。&lt;/li&gt;
+&lt;li&gt;padding 的值会影响每一帧的长度（具体分析见下面的题目），因为只有 1 位，因此长度也只限于在 0 和 1 之间变化&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;0x02-题目分析&#34;&gt;&lt;a href=&#34;#0x02-题目分析&#34; class=&#34;headerlink&#34; title=&#34;0x02 题目分析&#34;&gt;&lt;/a&gt;0x02 题目分析&lt;/h2&gt;&lt;p&gt;将解压后的&lt;code&gt;1.mp3&lt;/code&gt;文件用 010Editor 打开&lt;/p&gt;
-&lt;p&gt;可以看到一个mp3文件，里面基本上由mf数组构成。&lt;/p&gt;
+&lt;h2 id=&#34;0x02-题目分析&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x02-题目分析&#34;&gt;#&lt;/a&gt; 0x02 题目分析&lt;/h2&gt;
+&lt;p&gt;将解压后的 &lt;code&gt;1.mp3&lt;/code&gt;  文件用 010Editor 打开&lt;/p&gt;
+&lt;p&gt;可以看到一个 mp3 文件，里面基本上由 mf 数组构成。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220917115510767.png&#34; alt=&#34;image-20220917115510767&#34;&gt;&lt;/p&gt;
 &lt;p&gt;分析详见图片&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220917120013835.png&#34; alt=&#34;image-20220917120013835&#34;&gt;&lt;/p&gt;
-&lt;p&gt;接着，可以发现，每个mf数组大小不一，有的是0x1A1，有的0x1A2&lt;/p&gt;
+&lt;p&gt;接着，可以发现，每个 mf 数组大小不一，有的是 0x1A1，有的 0x1A2&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220917120301874.png&#34; alt=&#34;image-20220917120301874&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;图中可知，private_bit的数值的在0和1中变化，可以让&lt;code&gt;copyright&lt;/code&gt; 、&lt;code&gt;private_bit&lt;/code&gt;这样的单bit位在 0 和 1 之间发生改变，进而影响了单独mf数组的大小。因此，这两位在整个mf数组中连续拼接可能藏有flag或者重要的信息，优先提取。&lt;/p&gt;
+&lt;p&gt;图中可知，private_bit 的数值的在 0 和 1 中变化，可以让 &lt;code&gt;copyright&lt;/code&gt;  、 &lt;code&gt;private_bit&lt;/code&gt;  这样的单 bit 位在 0 和 1 之间发生改变，进而影响了单独 mf 数组的大小。因此，这两位在整个 mf 数组中连续拼接可能藏有 flag 或者重要的信息，优先提取。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;0x03-解析脚本&#34;&gt;&lt;a href=&#34;#0x03-解析脚本&#34; class=&#34;headerlink&#34; title=&#34;0x03 解析脚本&#34;&gt;&lt;/a&gt;0x03 解析脚本&lt;/h2&gt;&lt;p&gt;脚本如下：&lt;/p&gt;
+&lt;h2 id=&#34;0x03-解析脚本&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x03-解析脚本&#34;&gt;#&lt;/a&gt; 0x03 解析脚本&lt;/h2&gt;
+&lt;p&gt;脚本如下：&lt;/p&gt;
 &lt;figure class=&#34;highlight python&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;comment&#34;&gt;# coding:utf-8&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;keyword&#34;&gt;import&lt;/span&gt; re&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   n = &lt;span class=&#34;number&#34;&gt;0x399D0&lt;/span&gt; + &lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;  &lt;span class=&#34;comment&#34;&gt;# 起始位置，为什么+2 下面有解释&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   target_bit = &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   flag = &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   file = &lt;span class=&#34;built_in&#34;&gt;open&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;#x27;1.mp3&amp;#x27;&lt;/span&gt;, &lt;span class=&#34;string&#34;&gt;&amp;#x27;rb&amp;#x27;&lt;/span&gt;) &lt;span class=&#34;comment&#34;&gt;# 以二进制打开文件&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;comment&#34;&gt;# 提取&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;keyword&#34;&gt;while&lt;/span&gt; n &amp;lt; &lt;span class=&#34;number&#34;&gt;0x294C6A&lt;/span&gt;:  &lt;span class=&#34;comment&#34;&gt;# 结束位置&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       file.seek(n, &lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;) &lt;span class=&#34;comment&#34;&gt;# 从头吃掉第一帧前面的字节(0x399D0) + frame_sync、 mpeg_id、layer_id、protection_bit这四个字段(16bit，即2字节)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       byte = file.read(&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;)  &lt;span class=&#34;comment&#34;&gt;#往后读取一个字节（8位）&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       padding = &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#123;:08b&amp;#125;&amp;#x27;&lt;/span&gt;.&lt;span class=&#34;built_in&#34;&gt;format&lt;/span&gt;(&lt;span class=&#34;built_in&#34;&gt;ord&lt;/span&gt;(byte))[-&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;] &lt;span class=&#34;comment&#34;&gt;#从中提取倒数第2个bit 也就是padding的值 ord函数，是chr函数的对应，将字符变成10进制数字&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       target_bit += &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#123;:08b&amp;#125;&amp;#x27;&lt;/span&gt;.&lt;span class=&#34;built_in&#34;&gt;format&lt;/span&gt;(&lt;span class=&#34;built_in&#34;&gt;ord&lt;/span&gt;(byte))[-&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;] &lt;span class=&#34;comment&#34;&gt;#从中提取倒数第1个bit 也就是private_bit的值，需要累加拼接&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       &lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt; padding == &lt;span class=&#34;string&#34;&gt;&amp;quot;1&amp;quot;&lt;/span&gt;:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;           n += &lt;span class=&#34;number&#34;&gt;0x1A2&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       &lt;span class=&#34;keyword&#34;&gt;else&lt;/span&gt;:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;           n += &lt;span class=&#34;number&#34;&gt;0x1A1&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;built_in&#34;&gt;print&lt;/span&gt;(target_bit)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;comment&#34;&gt;#textArr = re.findall(&amp;#x27;.&amp;#123;&amp;#x27;+str(8)+&amp;#x27;&amp;#125;&amp;#x27;, result)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   textArr = re.findall(&lt;span class=&#34;string&#34;&gt;r&amp;#x27;\d&amp;#123;8&amp;#125;&amp;#x27;&lt;/span&gt;, target_bit) &lt;span class=&#34;comment&#34;&gt;#利用正则匹配每8个数字为一组，将其变为字符串数组方便处理&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;built_in&#34;&gt;print&lt;/span&gt;(textArr)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;keyword&#34;&gt;for&lt;/span&gt; i &lt;span class=&#34;keyword&#34;&gt;in&lt;/span&gt; textArr:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       flag += &lt;span class=&#34;built_in&#34;&gt;chr&lt;/span&gt;(&lt;span class=&#34;built_in&#34;&gt;int&lt;/span&gt;(i, &lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;)).strip(&lt;span class=&#34;string&#34;&gt;&amp;#x27;\n&amp;#x27;&lt;/span&gt;)     &lt;span class=&#34;comment&#34;&gt;#int(&amp;#x27;二进制数&amp;#x27;, 2) 就转成了10进制   chr(&amp;#x27;10进制数&amp;#x27;) 就转成字符&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;comment&#34;&gt;#print(flag) #发现后面有很多未知空字符，删也删不掉&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   flag = re.findall(&lt;span class=&#34;string&#34;&gt;r&amp;#x27;\w+\&amp;#123;.+\&amp;#125;&amp;#x27;&lt;/span&gt;,flag) &lt;span class=&#34;comment&#34;&gt;#用正则匹配标准flag&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;built_in&#34;&gt;print&lt;/span&gt;(flag[&lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;])&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;flag{0k4_YOu_Seem_s0_cl3ver_t0_find_f1ag!}&lt;/p&gt;
+&lt;p 0k4_YOu_Seem_s0_cl3ver_t0_find_f1ag!=&#34;&#34;&gt;flag&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220917134916608.png&#34; alt=&#34;image-20220917134916608&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;0x04-常用正则-补充&#34;&gt;&lt;a href=&#34;#0x04-常用正则-补充&#34; class=&#34;headerlink&#34; title=&#34;0x04 常用正则(补充)&#34;&gt;&lt;/a&gt;0x04 常用正则(补充)&lt;/h2&gt;&lt;p&gt;①&lt;strong&gt;显示不可打印的字符&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;table-container&#34;&gt;
+&lt;h2 id=&#34;0x04-常用正则补充&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x04-常用正则补充&#34;&gt;#&lt;/a&gt; 0x04 常用正则 (补充)&lt;/h2&gt;
+&lt;p&gt;①&lt;strong&gt;显示不可打印的字符&lt;/strong&gt;&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -77,9 +80,7 @@
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;/div&gt;
 &lt;p&gt;②&lt;strong&gt;指定预定义的字符集&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;table-container&#34;&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -90,7 +91,7 @@
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td&gt;\d&lt;/td&gt;
-&lt;td&gt;任意一个十进制数字[0-9]&lt;/td&gt;
+&lt;td&gt;任意一个十进制数字 [0-9]&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;\D&lt;/td&gt;
@@ -98,7 +99,7 @@
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;\s&lt;/td&gt;
-&lt;td&gt;任意一个空白字符(空格、换行符、换页符、回车符、字表符)&lt;/td&gt;
+&lt;td&gt;任意一个空白字符 (空格、换行符、换页符、回车符、字表符)&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;\S&lt;/td&gt;
@@ -114,9 +115,8 @@
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;/div&gt;
-&lt;p&gt;③&lt;strong&gt;限定符(？*+{n，m}.)&lt;/strong&gt;&lt;br&gt;限定符主要是用来限定每个字符串出现的次数。&lt;/p&gt;
-&lt;div class=&#34;table-container&#34;&gt;
+&lt;p&gt;③&lt;strong&gt;限定符 (？*+{n，m}.)&lt;/strong&gt;&lt;br&gt;
+ 限定符主要是用来限定每个字符串出现的次数。&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -138,16 +138,16 @@
 &lt;td&gt;一次或多次&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;{n}&lt;/td&gt;
-&lt;td&gt;n次&lt;/td&gt;
+&lt;td n=&#34;&#34;&gt;&lt;/td&gt;
+&lt;td&gt;n 次&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;{n,}&lt;/td&gt;
-&lt;td&gt;至少n次&lt;/td&gt;
+&lt;td n,=&#34;&#34;&gt;&lt;/td&gt;
+&lt;td&gt;至少 n 次&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;{n,m}&lt;/td&gt;
-&lt;td&gt;n到m次&lt;/td&gt;
+&lt;td n,m=&#34;&#34;&gt;&lt;/td&gt;
+&lt;td&gt;n 到 m 次&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td&gt;.&lt;/td&gt;
@@ -155,12 +155,12 @@
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;/div&gt;
-&lt;h2 id=&#34;0x05-再来一道&#34;&gt;&lt;a href=&#34;#0x05-再来一道&#34; class=&#34;headerlink&#34; title=&#34;0x05 再来一道&#34;&gt;&lt;/a&gt;0x05 再来一道&lt;/h2&gt;&lt;p&gt;翻看了几帧发现&lt;code&gt;private_bit&lt;/code&gt;位都是0，似乎并没有存储数据。但是在翻看的时候发现，++&lt;code&gt;uint32 copyright&lt;/code&gt;这一位似乎内藏玄机++，这一位在相邻几帧的数据有0有1，查询得知这是版权位，通常不会出现不同帧有0有1的情况。&lt;/p&gt;
-&lt;p&gt;于是决定将&lt;code&gt;copyright&lt;/code&gt;位的数据提取出来看看。&lt;/p&gt;
+&lt;h2 id=&#34;0x05-再来一道&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#0x05-再来一道&#34;&gt;#&lt;/a&gt; 0x05 再来一道&lt;/h2&gt;
+&lt;p&gt;翻看了几帧发现 &lt;code&gt;private_bit&lt;/code&gt;  位都是 0，似乎并没有存储数据。但是在翻看的时候发现，&lt;ins&gt; &lt;code&gt;uint32 copyright&lt;/code&gt;  这一位似乎内藏玄机&lt;/ins&gt;，这一位在相邻几帧的数据有 0 有 1，查询得知这是版权位，通常不会出现不同帧有 0 有 1 的情况。&lt;/p&gt;
+&lt;p&gt;于是决定将 &lt;code&gt;copyright&lt;/code&gt;  位的数据提取出来看看。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220917134512128.png&#34; alt=&#34;image-20220917134512128&#34;&gt;&lt;/p&gt;
 &lt;figure class=&#34;highlight python&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;comment&#34;&gt;# coding:utf-8&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;import&lt;/span&gt; re&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;n = &lt;span class=&#34;number&#34;&gt;0xF05A4&lt;/span&gt; + &lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;  &lt;span class=&#34;comment&#34;&gt;# 起始位置，为什么+2 下面有解释&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;target_bit = &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;flag = &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#x27;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;file = &lt;span class=&#34;built_in&#34;&gt;open&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;#x27;2.mp3&amp;#x27;&lt;/span&gt;, &lt;span class=&#34;string&#34;&gt;&amp;#x27;rb&amp;#x27;&lt;/span&gt;)  &lt;span class=&#34;comment&#34;&gt;# 以二进制打开文件&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;comment&#34;&gt;# 提取&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;while&lt;/span&gt; n &amp;lt; &lt;span class=&#34;number&#34;&gt;0xC12623&lt;/span&gt;:  &lt;span class=&#34;comment&#34;&gt;# 结束位置&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    file.seek(n, &lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;)  &lt;span class=&#34;comment&#34;&gt;# 从头吃掉第一帧前面的字节(0x399D0) + frame_sync、 mpeg_id、layer_id、protection_bit这四个字段(16bit，即2字节)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    byte = file.read(&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;)  &lt;span class=&#34;comment&#34;&gt;# 往后读取一个字节（8位）&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    padding = &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#123;:08b&amp;#125;&amp;#x27;&lt;/span&gt;.&lt;span class=&#34;built_in&#34;&gt;format&lt;/span&gt;(&lt;span class=&#34;built_in&#34;&gt;ord&lt;/span&gt;(byte))[-&lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;]  &lt;span class=&#34;comment&#34;&gt;# 从中提取倒数第2个bit 也就是padding的值&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    file.seek(n + &lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;, &lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    byte = file.read(&lt;span class=&#34;number&#34;&gt;1&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    target_bit += &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#123;:08b&amp;#125;&amp;#x27;&lt;/span&gt;.&lt;span class=&#34;built_in&#34;&gt;format&lt;/span&gt;(&lt;span class=&#34;built_in&#34;&gt;ord&lt;/span&gt;(byte))[-&lt;span class=&#34;number&#34;&gt;4&lt;/span&gt;]  &lt;span class=&#34;comment&#34;&gt;# 从中提取倒数第1个bit 也就是copyright的值，需要累加拼接&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt; padding == &lt;span class=&#34;string&#34;&gt;&amp;quot;1&amp;quot;&lt;/span&gt;:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        n += &lt;span class=&#34;number&#34;&gt;0x415&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;else&lt;/span&gt;:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        n += &lt;span class=&#34;number&#34;&gt;0x414&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;built_in&#34;&gt;print&lt;/span&gt;(target_bit)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;comment&#34;&gt;# textArr = re.findall(&amp;#x27;.&amp;#123;&amp;#x27;+str(8)+&amp;#x27;&amp;#125;&amp;#x27;, result)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;textArr = re.findall(&lt;span class=&#34;string&#34;&gt;r&amp;#x27;\d&amp;#123;8&amp;#125;&amp;#x27;&lt;/span&gt;, target_bit)  &lt;span class=&#34;comment&#34;&gt;# 利用正则匹配每8个数字为一组，将其变为字符串数组方便处理&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;built_in&#34;&gt;print&lt;/span&gt;(textArr)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;for&lt;/span&gt; i &lt;span class=&#34;keyword&#34;&gt;in&lt;/span&gt; textArr:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    flag += &lt;span class=&#34;built_in&#34;&gt;chr&lt;/span&gt;(&lt;span class=&#34;built_in&#34;&gt;int&lt;/span&gt;(i, &lt;span class=&#34;number&#34;&gt;2&lt;/span&gt;)).strip(&lt;span class=&#34;string&#34;&gt;&amp;#x27;\n&amp;#x27;&lt;/span&gt;)  &lt;span class=&#34;comment&#34;&gt;# int(&amp;#x27;二进制数&amp;#x27;, 2) 就转成了10进制   chr(&amp;#x27;10进制数&amp;#x27;) 就转成字符&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;flag = re.findall(&lt;span class=&#34;string&#34;&gt;r&amp;#x27;\w+\&amp;#123;.+\&amp;#125;&amp;#x27;&lt;/span&gt;,flag)&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;built_in&#34;&gt;print&lt;/span&gt;(flag[&lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;])&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;flag{b3d7bed5-e8da-4d9c-848c-e5d332d63bcd}&lt;/p&gt;
+&lt;p b3d7bed5-e8da-4d9c-848c-e5d332d63bcd=&#34;&#34;&gt;flag&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;image-20220917134626086.png&#34; alt=&#34;image-20220917134626086&#34;&gt;&lt;/p&gt;
  ]]></description>
         </item>
