@@ -5,6 +5,16 @@
     "home_page_url": "https://kiyomijin.github.io",
     "items": [
         {
+            "id": "https://kiyomijin.github.io/2022/10/06/G%E8%AE%A1%E5%88%92/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80/",
+            "url": "https://kiyomijin.github.io/2022/10/06/G%E8%AE%A1%E5%88%92/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80/",
+            "title": "密码学基础",
+            "date_published": "2022-10-06T05:47:55.000Z",
+            "content_html": "<h1 id=\"密码学基础\"><a class=\"markdownIt-Anchor\" href=\"#密码学基础\">#</a> 密码学基础</h1>\n<h2 id=\"分组密码学原理与应用\"><a class=\"markdownIt-Anchor\" href=\"#分组密码学原理与应用\">#</a> 分组密码学原理与应用</h2>\n<h3 id=\"原理\"><a class=\"markdownIt-Anchor\" href=\"#原理\">#</a> 原理</h3>\n<p>对称密钥密码体制又称分组密码体制、单密钥密码体制，是 <wavy>**加密密钥**</wavy> 和 <wavy>**解密密钥**</wavy>  <code>相同</code> 的密码体制。</p>\n<p><code>加密算法</code> 、 <code>解密算法</code> 是<u>**公开**</u>的。</p>\n<p><code>加密算法</code> 必须足够 <code>复杂</code> 。</p>\n<p>其 <code>密钥必须保密</code> 并且有足够大的密钥空间，从而使得攻击者在 <code>截取密文</code> 和 <code>知道加密算法</code> 的情况下，仍然 <code>无法还原</code> 出 <code>明文</code> 。</p>\n<p>假设网络中有 <code>n个</code> 使用者，使用者之间共享 <code>1个</code> 秘钥，则共有 <code>n（n-1）/2个</code> 秘钥。</p>\n<p>分组密码典型算法有： <code>DES</code> 、 <code>IDEA</code> 、 <code>AES</code> 。</p>\n<h3 id=\"优点\"><a class=\"markdownIt-Anchor\" href=\"#优点\">#</a> 优点</h3>\n<p><strong>私钥密码算法</strong> <code>处理速度快</code> ，人们常常将其用作 <code>数据加密处理</code> 。</p>\n<h3 id=\"缺点\"><a class=\"markdownIt-Anchor\" href=\"#缺点\">#</a> 缺点</h3>\n<ul>\n<li>密钥 <code>分配</code> 问题</li>\n<li>密钥 <code>管理</code> 问题</li>\n<li>无法认证 <code>源</code></li>\n</ul>\n<h2 id=\"公钥密码学原理与应用\"><a class=\"markdownIt-Anchor\" href=\"#公钥密码学原理与应用\">#</a> 公钥密码学原理与应用</h2>\n",
+            "tags": [
+                "G计划"
+            ]
+        },
+        {
             "id": "https://kiyomijin.github.io/2022/10/05/XSS%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB%E6%8E%A2%E7%A9%B6/XSS%E4%BB%8B%E7%BB%8D/",
             "url": "https://kiyomijin.github.io/2022/10/05/XSS%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB%E6%8E%A2%E7%A9%B6/XSS%E4%BB%8B%E7%BB%8D/",
             "title": "XSS介绍",
