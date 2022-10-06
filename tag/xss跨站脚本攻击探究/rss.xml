@@ -7,11 +7,11 @@
         <language>zh-CN</language>
         <pubDate>Wed, 05 Oct 2022 00:56:24 +0800</pubDate>
         <lastBuildDate>Wed, 05 Oct 2022 00:56:24 +0800</lastBuildDate>
+        <category>G计划</category>
         <category>原创</category>
         <category>SQL注入探究</category>
-        <category>G计划</category>
-        <category>XSS跨站脚本攻击探究</category>
         <category>数据库安全</category>
+        <category>XSS跨站脚本攻击探究</category>
         <category>文件上传漏洞探究</category>
         <category>CTF小训</category>
         <category>Misc</category>

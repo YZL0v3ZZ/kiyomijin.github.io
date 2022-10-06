@@ -4,11 +4,11 @@
     <title>My Violet Eva Garden</title>
     <link href="https://kiyomijin.github.io" />
     <updated>2022-10-06T05:47:55.000Z</updated>
+    <category term="G计划" />
     <category term="原创" />
     <category term="SQL注入探究" />
-    <category term="G计划" />
-    <category term="XSS跨站脚本攻击探究" />
     <category term="数据库安全" />
+    <category term="XSS跨站脚本攻击探究" />
     <category term="文件上传漏洞探究" />
     <category term="CTF小训" />
     <category term="Misc" />
@@ -56,6 +56,14 @@
 &lt;/div&gt;
 &lt;p&gt;加密算法与密钥扩展算法都采用32轮非线性迭代结构。&lt;/p&gt;
 &lt;p&gt;数据解密和数据加密的算法结构相同，只是轮密钥的使用顺序相反，解密轮密钥是加密轮密钥的逆序。详见GM/T0002-2012《SM4分组密码算法》。&lt;/p&gt;
+&lt;h4 id=&#34;数字信封（对称密钥-公钥）&#34;&gt;&lt;a href=&#34;#数字信封（对称密钥-公钥）&#34; class=&#34;headerlink&#34; title=&#34;数字信封（对称密钥+公钥）&#34;&gt;&lt;/a&gt;数字信封（对称密钥+公钥）&lt;/h4&gt;&lt;p&gt;数字信封是一种综合利用了&lt;code&gt;对称加密技术&lt;/code&gt;和&lt;code&gt;非对称加密技术&lt;/code&gt;两者的优点进行&lt;code&gt;信息安全传输&lt;/code&gt;的一种技术。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;发送方采用&lt;code&gt;对称密钥&lt;/code&gt;来&lt;code&gt;加密信息内容&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;发送方再用接收方的&lt;code&gt;公开密钥&lt;/code&gt;来&lt;code&gt;加密对称密钥&lt;/code&gt;（这部分称数字信封），将它和加密后的信息一起发送给接收方&lt;/li&gt;
+&lt;li&gt;接收方先用自己的&lt;code&gt;私有密钥&lt;/code&gt;打开数字信封，得到&lt;code&gt;对称密钥&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;接收方最后使用&lt;code&gt;对称密钥&lt;/code&gt;解开加密信息。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;数字信封既发挥了对称加密算法速度快、安全性好的优点，又发挥了非对称加密算法密钥管理方便的优点。&lt;/p&gt;
 &lt;h2 id=&#34;公钥密码学原理与应用&#34;&gt;&lt;a href=&#34;#公钥密码学原理与应用&#34; class=&#34;headerlink&#34; title=&#34;公钥密码学原理与应用&#34;&gt;&lt;/a&gt;公钥密码学原理与应用&lt;/h2&gt;&lt;h3 id=&#34;原理-1&#34;&gt;&lt;a href=&#34;#原理-1&#34; class=&#34;headerlink&#34; title=&#34;原理&#34;&gt;&lt;/a&gt;原理&lt;/h3&gt;&lt;p&gt;公钥密码体制，也称&lt;code&gt;非对称密码体制&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;其基本原理是：在加密和解密的过程中&lt;strong&gt;使用不同的密钥处理&lt;/strong&gt;方式。&lt;/p&gt;
 &lt;p&gt;其中，&lt;code&gt;加密密钥&lt;/code&gt;可以&lt;mark class=&#34;hl-label red&#34;&gt;公开&lt;/mark&gt; ，而只需要把&lt;code&gt;解密密钥&lt;/code&gt;&lt;strong&gt;安全存放即可&lt;/strong&gt;。&lt;/p&gt;
@@ -66,13 +74,28 @@
 &lt;li&gt;支持数字签名。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;有三种公钥密码体制类型被证明是安全和有效的，即&lt;code&gt;RSA&lt;/code&gt;体制、&lt;code&gt;ELGamal&lt;/code&gt;体制、&lt;code&gt;椭圆曲线&lt;/code&gt;密码体制。&lt;/p&gt;
-&lt;h3 id=&#34;应用-1&#34;&gt;&lt;a href=&#34;#应用-1&#34; class=&#34;headerlink&#34; title=&#34;应用&#34;&gt;&lt;/a&gt;应用&lt;/h3&gt;&lt;h4 id=&#34;RSA【n的长度1024，长期2048】&#34;&gt;&lt;a href=&#34;#RSA【n的长度1024，长期2048】&#34; class=&#34;headerlink&#34; title=&#34;RSA【n的长度1024，长期2048】&#34;&gt;&lt;/a&gt;RSA【n的长度1024，长期2048】&lt;/h4&gt;&lt;p&gt;RSA算法是非对称算法，在RSA加密算法中，&lt;code&gt;公钥&lt;/code&gt;和&lt;code&gt;私钥&lt;/code&gt;都可以用于加密消息，&lt;strong&gt;用于 加密消息的密钥 与 用于解密消息的密钥 相反&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;应用-1&#34;&gt;&lt;a href=&#34;#应用-1&#34; class=&#34;headerlink&#34; title=&#34;应用&#34;&gt;&lt;/a&gt;应用&lt;/h3&gt;&lt;h4 id=&#34;RSA【n的长度1024，长期安全2048】&#34;&gt;&lt;a href=&#34;#RSA【n的长度1024，长期安全2048】&#34; class=&#34;headerlink&#34; title=&#34;RSA【n的长度1024，长期安全2048】&#34;&gt;&lt;/a&gt;RSA【n的长度1024，长期安全2048】&lt;/h4&gt;&lt;p&gt;RSA算法是非对称算法，在RSA加密算法中，&lt;code&gt;公钥&lt;/code&gt;和&lt;code&gt;私钥&lt;/code&gt;都可以用于加密消息，&lt;strong&gt;用于 加密消息的密钥 与 用于解密消息的密钥 相反&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;RSA算法提供了一种保护网络通信和数据存储的&lt;code&gt;机密性&lt;/code&gt;、&lt;code&gt;完整性&lt;/code&gt;、&lt;code&gt;真实性&lt;/code&gt;和&lt;code&gt;不可否认性&lt;/code&gt;的方法。&lt;/p&gt;
 &lt;p&gt;目前&lt;code&gt;SSH&lt;/code&gt;、&lt;code&gt;OpenPGP&lt;/code&gt;、&lt;code&gt;S/MIME&lt;/code&gt;、&lt;code&gt;SSL/TLS&lt;/code&gt;网络协议&lt;code&gt;都依赖于RSA&lt;/code&gt;进行加密和数字签名功能。&lt;/p&gt;
 &lt;p&gt;RSA算法在&lt;code&gt;浏览器中使用&lt;/code&gt;，能够在不可信任的互联网中建立安全连接。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;RSA签名验证&lt;/code&gt;是&lt;code&gt;网络连接系统&lt;/code&gt;中最常见的执行操作之一。&lt;/p&gt;
 &lt;p&gt;RSA算法基于&lt;mark class=&#34;hl-label blue&#34;&gt;大整数因子分解的困难性&lt;/mark&gt; &lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;image-20221006151440385.png&#34; alt=&#34;image-20221006151440385&#34;&gt;&lt;/p&gt;
+&lt;h5 id=&#34;RSA计算&#34;&gt;&lt;a href=&#34;#RSA计算&#34; class=&#34;headerlink&#34; title=&#34;RSA计算&#34;&gt;&lt;/a&gt;RSA计算&lt;/h5&gt;&lt;ol&gt;
+&lt;li&gt;n=p*q&lt;/li&gt;
+&lt;li&gt;φ(n)=(p-1)*(q-1) 求φ(n)&lt;/li&gt;
+&lt;li&gt;e*d mod φ(n) =1 求e d其中之一&lt;/li&gt;
+&lt;li&gt;c=m^e mod n 加密&lt;/li&gt;
+&lt;li&gt;m=c^d mod n 解密&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h5 id=&#34;字符说明&#34;&gt;&lt;a href=&#34;#字符说明&#34; class=&#34;headerlink&#34; title=&#34;字符说明&#34;&gt;&lt;/a&gt;字符说明&lt;/h5&gt;&lt;ul&gt;
+&lt;li&gt;p，q为两个素数，n为p，q乘积。&lt;/li&gt;
+&lt;li&gt;φ()为欧拉函数，φ(n)为小于或等于n的正整数中与n互质的数的数目【简单记住(p-1)*(q-1) 公式就行】&lt;/li&gt;
+&lt;li&gt;e为随机一个整数，d也是一个数字，题中会给出e和d其中一个不用纠结，可以用公式3求出来ed其中之一&lt;/li&gt;
+&lt;li&gt;mod是取余函数，例如3*5 mod 14，取余就是1&lt;/li&gt;
+&lt;li&gt;c是密文，m是明文&lt;/li&gt;
+&lt;li&gt;公钥为{e，n}，私钥为{d}&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;例题&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;考虑RSA密码体制，令p=3，q=11，d=7，m=5，给出密文C的计算过程。&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;解:&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;n = 3×11 = 33；&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;φ(n) = 2×10 = 20；&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;因为d=7, 根据e*d modφ(n) = 1；&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;求出e=3；&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;C = m^e mod n = 53 mod 33 = 26&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;即:C为26&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;国产密码算法&lt;/p&gt;
 &lt;p&gt;国产密码算法是指由国家密码研究相关机构自主研发，具有相关知识产权的商用密码算法。&lt;/p&gt;
 &lt;p&gt;1999年国务院发布实施的《商用密码管理条例》第一章第二条规定：“本条例所称商用密码，是指对不涉及国家秘密内容的信息进行加密保护或者安全认证所使用的密码技术和密码产品。”目前，已经公布的国产密码算法主要有SM1分组密码算法、SM2椭圆曲线公钥密码算法、SM3密码杂凑算法、SM4分组算法、SM9标识密码算法。各国产商用密码算法的特性统计如表3-1所示。&lt;/p&gt;
@@ -89,8 +112,17 @@
 &lt;h5 id=&#34;SHA【输入512-输出160】&#34;&gt;&lt;a href=&#34;#SHA【输入512-输出160】&#34; class=&#34;headerlink&#34; title=&#34;SHA【输入512-输出160】&#34;&gt;&lt;/a&gt;SHA【输入512-输出160】&lt;/h5&gt;&lt;p&gt;SHA（Secure Hash Algorithm）算法由NIST开发，并在1993年作为联邦信息处理标准公布。&lt;/p&gt;
 &lt;p&gt;SHA-1与MD5的设计原理类似，同样也以&lt;code&gt;512位&lt;/code&gt;数据块为单位来处理输入，产生&lt;code&gt;160位&lt;/code&gt;的哈希值，具有&lt;strong&gt;比MD5更强的安全性&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;SHA算法的安全性不断改进，已发布的版本有SHA-2、SHA-3。SHA算法产生的哈希值长度有SHA-224、SHA-256、SHA-384、SHA-512等。&lt;/p&gt;
-&lt;h5 id=&#34;SM3【输入512-输出256】&#34;&gt;&lt;a href=&#34;#SM3【输入512-输出256】&#34; class=&#34;headerlink&#34; title=&#34;SM3【输入512-输出256】&#34;&gt;&lt;/a&gt;SM3【输入512-输出256】&lt;/h5&gt;&lt;p&gt;SM3 是国家密码管理局千 2010 年公布的商用密码杂凑算法标准 该算法消息分组长度为512 比特，输出杂凑值长度为 256 比特，采用 Merkle-Damgard 结构。&lt;/p&gt;
-&lt;h4 id=&#34;数字签名&#34;&gt;&lt;a href=&#34;#数字签名&#34; class=&#34;headerlink&#34; title=&#34;数字签名&#34;&gt;&lt;/a&gt;数字签名&lt;/h4&gt;&lt;p&gt;数字签名（Digital Signature）是指签名者使用私钥对待签名数据的杂凑值做密码运算得到的结果。该结果只能用签名者的公钥进行验证，用于确认待签名数据的完整性、签名者身份的真实性和签名行为的抗抵赖性。数字签名的目的是通过网络信息安全技术手段实现传统的纸面签字或者盖章的功能，以确认交易当事人的真实身份，保证交易的安全性、真实性和不可抵赖性。数字签名具有与手写签名一样的特点，是可信的、不可伪造的、不可重用的、不可抵赖的以及不可修改的。数字签名至少应满足以下三个条件：&lt;br&gt;（1）&lt;code&gt;不可否认&lt;/code&gt;。签名者事后不能否认自己的签名。&lt;br&gt;（2）&lt;code&gt;真实性&lt;/code&gt;。接收者能验证签名，而任何其他人都不能伪造签名。&lt;br&gt;（3）&lt;code&gt;可鉴别性&lt;/code&gt;。当双方关于签名的真伪发生争执时，第三方能解决双方之间发生的争执。&lt;/p&gt;
+&lt;h5 id=&#34;SM3【输入512-输出256】&#34;&gt;&lt;a href=&#34;#SM3【输入512-输出256】&#34; class=&#34;headerlink&#34; title=&#34;SM3【输入512-输出256】&#34;&gt;&lt;/a&gt;SM3【输入512-输出256】&lt;/h5&gt;&lt;p&gt;SM3 是国家密码管理局千 2010 年公布的商用密码杂凑算法标准 该算法消息分组长度为&lt;code&gt;512 比特&lt;/code&gt;，输出杂凑值长度为&lt;code&gt;256 比特&lt;/code&gt;，采用 Merkle-Damgard 结构。&lt;/p&gt;
+&lt;h4 id=&#34;数字签名&#34;&gt;&lt;a href=&#34;#数字签名&#34; class=&#34;headerlink&#34; title=&#34;数字签名&#34;&gt;&lt;/a&gt;数字签名&lt;/h4&gt;&lt;p&gt;数字签名（Digital Signature）是指签名者使用私钥对待签名数据的杂凑值做密码运算得到的结果。&lt;/p&gt;
+&lt;p&gt;该结果只能用签名者的公钥进行验证，用于确认待签名数据的完整性、签名者身份的真实性和签名行为的抗抵赖性。&lt;/p&gt;
+&lt;p&gt;数字签名的目的是&lt;strong&gt;通过网络信息安全技术手段实现传统的纸面签字或者盖章的功能&lt;/strong&gt;，以&lt;code&gt;确认交易当事人的真实身份&lt;/code&gt;，&lt;code&gt;保证交易的安全性&lt;/code&gt;、&lt;code&gt;真实性&lt;/code&gt;和&lt;code&gt;不可抵赖性&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;数字签名具有与手写签名一样的特点，是&lt;strong&gt;可信的、不可伪造的、不可重用的、不可抵赖的&lt;/strong&gt;以及&lt;mark class=&#34;hl-label red&#34;&gt;不可修改&lt;/mark&gt; 的。&lt;/p&gt;
+&lt;p&gt;数字签名至少应满足以下三个条件：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;不可否认&lt;/code&gt;。签名者事后不能否认自己的签名。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;真实性&lt;/code&gt;。接收者能验证签名，而任何其他人都不能伪造签名。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;可鉴别性&lt;/code&gt;。当双方关于签名的真伪发生争执时，第三方能解决双方之间发生的争执。&lt;/li&gt;
+&lt;/ol&gt;
 &lt;p&gt;一个数字签名方案一般由签名算法和验证算法组成。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;签名算法密钥&lt;/code&gt;是&lt;code&gt;秘密&lt;/code&gt;的，&lt;strong&gt;只有签名的人掌握&lt;/strong&gt;；而&lt;code&gt;验证算法&lt;/code&gt;则是&lt;code&gt;公开&lt;/code&gt;的，以便他人验证。&lt;/p&gt;
 &lt;p&gt;典型的数字签名方案有RSA签名体制、Rabin签名体制、ElGamal签名体制和DSS（Data Signature Standard）标准。&lt;/p&gt;
