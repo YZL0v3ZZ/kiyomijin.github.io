@@ -4,11 +4,11 @@
     <title>My Violet Eva Garden</title>
     <link href="https://kiyomijin.github.io" />
     <updated>2022-10-06T05:47:55.000Z</updated>
-    <category term="G计划" />
     <category term="原创" />
+    <category term="G计划" />
+    <category term="XSS跨站脚本攻击探究" />
     <category term="SQL注入探究" />
     <category term="数据库安全" />
-    <category term="XSS跨站脚本攻击探究" />
     <category term="文件上传漏洞探究" />
     <category term="CTF小训" />
     <category term="Misc" />
@@ -105,7 +105,7 @@
 &lt;p&gt;SM2算法可以用于数字签名、密钥交换、公钥加密。详见GM/T 0009-2012《SM2密码算法使用规范》。&lt;/p&gt;
 &lt;h4 id=&#34;SM3【杂凑256】&#34;&gt;&lt;a href=&#34;#SM3【杂凑256】&#34; class=&#34;headerlink&#34; title=&#34;SM3【杂凑256】&#34;&gt;&lt;/a&gt;SM3【杂凑256】&lt;/h4&gt;&lt;p&gt;SM3杂凑算法对长度为l（1&amp;lt;24）比特的消息m，经过填充、迭代压缩，生成杂凑值，&lt;code&gt;杂凑值输出长度为256比特&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;详见GM/T0004-2012《SM3密码杂凑算法》。&lt;/p&gt;
-&lt;h4 id=&#34;Hash函数与数字签名&#34;&gt;&lt;a href=&#34;#Hash函数与数字签名&#34; class=&#34;headerlink&#34; title=&#34;Hash函数与数字签名&#34;&gt;&lt;/a&gt;Hash函数与数字签名&lt;/h4&gt;&lt;p&gt;杂凑函数简称Hash函数，它能够将任意长度的信息转换成固定长度的哈希值（又称数字摘要或消息摘要），并且任意不同消息或文件所生成的哈希值是不一样的。令h表示Hash函数，则h满足下列条件：&lt;br&gt;（1）h的输入可以是任意长度的消息或文件M；&lt;br&gt;（2）h的输出的长度是固定的；&lt;br&gt;（3）给定h和M，计算h（M）是容易的；&lt;br&gt;（4）给定h的描述，找两个不同的消息M，和M2，使得h（M）=h（M2）是计算上不可行的。&lt;br&gt;Hash函数的安全性，是指在现有的计算资源下，找到一个碰撞是不可能的。Hash函数在网络安全应用中，不仅能用于保护消息或文件的完整性，而且也能用作密码信息的安全存储。&lt;br&gt;例如，网页防篡改应用。网页文件管理者首先用网页文件生成系列Hash值，并将Hash值备份存放在安全的地方。然后定时再计算这些网页文件的Hash值，如果新产生的Hash值与备份的Hash值不一样，则说明网页文件被篡改了。&lt;/p&gt;
+&lt;h4 id=&#34;Hash函数&#34;&gt;&lt;a href=&#34;#Hash函数&#34; class=&#34;headerlink&#34; title=&#34;Hash函数&#34;&gt;&lt;/a&gt;Hash函数&lt;/h4&gt;&lt;p&gt;杂凑函数简称Hash函数，它能够将任意长度的信息转换成固定长度的哈希值（又称数字摘要或消息摘要），并且任意不同消息或文件所生成的哈希值是不一样的。令h表示Hash函数，则h满足下列条件：&lt;br&gt;（1）h的输入可以是任意长度的消息或文件M；&lt;br&gt;（2）h的输出的长度是固定的；&lt;br&gt;（3）给定h和M，计算h（M）是容易的；&lt;br&gt;（4）给定h的描述，找两个不同的消息M，和M2，使得h（M）=h（M2）是计算上不可行的。&lt;br&gt;Hash函数的安全性，是指在现有的计算资源下，找到一个碰撞是不可能的。Hash函数在网络安全应用中，不仅能用于保护消息或文件的完整性，而且也能用作密码信息的安全存储。&lt;br&gt;例如，网页防篡改应用。网页文件管理者首先用网页文件生成系列Hash值，并将Hash值备份存放在安全的地方。然后定时再计算这些网页文件的Hash值，如果新产生的Hash值与备份的Hash值不一样，则说明网页文件被篡改了。&lt;/p&gt;
 &lt;h5 id=&#34;MD5【输入512-输出128】&#34;&gt;&lt;a href=&#34;#MD5【输入512-输出128】&#34; class=&#34;headerlink&#34; title=&#34;MD5【输入512-输出128】&#34;&gt;&lt;/a&gt;MD5【输入512-输出128】&lt;/h5&gt;&lt;p&gt;MD5（Message Digest Algorithm-5）算法是由Rivest设计的，于1992年公开，RFC1321对其进行了详细描述。&lt;/p&gt;
 &lt;p&gt;MD5以&lt;code&gt;512位&lt;/code&gt;数据块为单位来处理输入，产生&lt;code&gt;128位&lt;/code&gt;的消息摘要，即&lt;strong&gt;MD5能产生128比特长度的哈希值&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;MD5使用广泛，常用在文件完整性检查。但是，据最新研究表明，MD5的安全性受到挑战，王小云教授及其研究团队提出了Hash函数快速寻找碰撞攻击的方法，相关研究工作表明MD5的安全性已经不足。&lt;/p&gt;
