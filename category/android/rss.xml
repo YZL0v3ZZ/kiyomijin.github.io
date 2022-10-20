@@ -8,11 +8,12 @@
         <pubDate>Thu, 14 Jul 2022 03:13:28 +0800</pubDate>
         <lastBuildDate>Thu, 14 Jul 2022 03:13:28 +0800</lastBuildDate>
         <category>原创</category>
-        <category>XSS跨站脚本攻击探究</category>
-        <category>G计划</category>
         <category>SQL注入探究</category>
+        <category>G计划</category>
         <category>数据库安全</category>
+        <category>XSS跨站脚本攻击探究</category>
         <category>文件上传漏洞探究</category>
+        <category>文件包含探究</category>
         <category>CTF小训</category>
         <category>Misc</category>
         <item>
